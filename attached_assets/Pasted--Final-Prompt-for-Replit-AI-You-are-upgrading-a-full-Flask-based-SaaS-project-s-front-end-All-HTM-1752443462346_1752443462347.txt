@@ -1,0 +1,87 @@
+✅ Final Prompt for Replit AI:
+You are upgrading a full Flask-based SaaS project’s front-end. All HTML files are stored in the templates/ folder, and CSS/JS in static/.
+
+🎯 Your job is to apply the Cold Email Generator Landing Page Theme consistently across ALL pages, making them modern, responsive, and professional.
+
+🧩 Apply this Theme to:
+landing.html
+
+login.html
+
+signup.html
+
+home.html (dashboard showing emails)
+
+profile.html
+
+archived.html
+
+locked.html
+
+set_lock_password.html
+
+verify_lock_password.html
+
+🎨 Design Requirements:
+Use Cold Email Generator Theme (already built in landing.html)
+
+Primary color: #1034A6
+
+Font: Poppins, fallback Inter
+
+White background with dark text (unless dark mode)
+
+Rounded corners, hover animations, subtle shadows
+
+Responsive & Consistent Layout
+
+Use layout.html (Jinja template) for base structure
+
+All pages should {% extends 'layout.html' %} and {% block content %} their content
+
+Use consistent navbars, footers, cards, buttons, form fields
+
+Fix Visual Issues
+
+Navbar: must change colors properly in dark mode (not stay white)
+
+All text (especially .description, .eg, inputs) should be readable in both modes
+
+Add smooth transitions for hover and dark toggle
+
+Functionality Fixes
+
+Profile Page:
+
+Show total email count, archived count, locked count
+
+Add working buttons for "Change Password", "Upgrade Plan", "Logout"
+
+Locked & Set Password Pages:
+
+Center forms, fix bland UI
+
+Add working "Reset Lock Password" button
+
+Modern Touches
+
+Add scroll animations (e.g., AOS.js or fade-ins)
+
+Use Flexbox/Grid for layouts
+
+Ensure mobile-first responsiveness
+
+Add hover glow or ripple effects to buttons
+
+✅ Output:
+Replace all existing HTML files inside /templates/ with upgraded versions
+
+Create or update layout.html in /templates/
+
+Place CSS in /static/style.css and link it in all pages
+
+JS (like dark mode toggle, form interactivity) goes in /static/script.js
+
+💡 You don’t need to add Flask back-end code. Just front-end HTML/CSS/JS.
+
+This is your final task — make the site look professional, responsive, clean, and ready for launch with no flaws.
