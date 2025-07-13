@@ -218,7 +218,7 @@
                 <div class="stat-icon">
                     <i class="fas fa-envelope"></i>
                 </div>
-                <div class="stat-number" id="totalEmails">42</div>
+                <div class="stat-number" id="totalEmails">{{ total_emails }}</div>
                 <div class="stat-label">Total Emails</div>
             </div>
         </div>
@@ -228,7 +228,7 @@
                 <div class="stat-icon">
                     <i class="fas fa-lock"></i>
                 </div>
-                <div class="stat-number" id="lockedEmails">3</div>
+                <div class="stat-number" id="lockedEmails">{{ locked_emails }}</div>
                 <div class="stat-label">Locked Emails</div>
             </div>
         </div>
@@ -238,7 +238,7 @@
                 <div class="stat-icon">
                     <i class="fas fa-archive"></i>
                 </div>
-                <div class="stat-number" id="archivedEmails">7</div>
+                <div class="stat-number" id="archivedEmails">{{ archived_emails }}</div>
                 <div class="stat-label">Archived Emails</div>
             </div>
         </div>
@@ -246,10 +246,10 @@
         <div class="col-lg-3 col-md-6 mb-4">
             <div class="stat-card">
                 <div class="stat-icon">
-                    <i class="fas fa-calendar-week"></i>
+                    <i class="fas fa-envelope-open"></i>
                 </div>
-                <div class="stat-number" id="thisWeek">12</div>
-                <div class="stat-label">This Week</div>
+                <div class="stat-number" id="activeEmails">{{ active_emails }}</div>
+                <div class="stat-label">Active Emails</div>
             </div>
         </div>
     </div>
@@ -386,10 +386,10 @@
 
     // Animate stats on page load
     document.addEventListener('DOMContentLoaded', function() {
-        animateNumber(document.getElementById('totalEmails'), 0, 42, 2000);
-        animateNumber(document.getElementById('lockedEmails'), 0, 3, 1500);
-        animateNumber(document.getElementById('archivedEmails'), 0, 7, 1800);
-        animateNumber(document.getElementById('thisWeek'), 0, 12, 1200);
+        animateNumber(document.getElementById('totalEmails'), 0, {{ total_emails }}, 2000);
+        animateNumber(document.getElementById('lockedEmails'), 0, {{ locked_emails }}, 1500);
+        animateNumber(document.getElementById('archivedEmails'), 0, {{ archived_emails }}, 1800);
+        animateNumber(document.getElementById('activeEmails'), 0, {{ active_emails }}, 1200);
         
         // Sync dark mode switch with navbar toggle
         const darkModeSwitch = document.getElementById('darkModeSwitch');

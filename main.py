@@ -44,7 +44,33 @@ def index():
 def profile():
     if 'user_email' not in session:
         return redirect('/login')
-    return render_template('profile.html')
+    
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    
+    # Get total emails
+    cursor.execute("SELECT COUNT(*) FROM emails WHERE user_email = ?", (session['user_email'],))
+    total_emails = cursor.fetchone()[0]
+    
+    # Get archived emails
+    cursor.execute("SELECT COUNT(*) FROM emails WHERE user_email = ? AND is_archived = 1", (session['user_email'],))
+    archived_emails = cursor.fetchone()[0]
+    
+    # Get locked emails
+    cursor.execute("SELECT COUNT(*) FROM emails WHERE user_email = ? AND is_locked = 1", (session['user_email'],))
+    locked_emails = cursor.fetchone()[0]
+    
+    # Get active emails (non-archived, non-locked)
+    cursor.execute("SELECT COUNT(*) FROM emails WHERE user_email = ? AND is_archived = 0 AND is_locked = 0", (session['user_email'],))
+    active_emails = cursor.fetchone()[0]
+    
+    conn.close()
+    
+    return render_template('profile.html', 
+                         total_emails=total_emails,
+                         archived_emails=archived_emails,
+                         locked_emails=locked_emails,
+                         active_emails=active_emails)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -300,6 +326,30 @@ def forgot_lock_password():
             conn.close()
             
     return "❌ Incorrect lock password. <a href='/locked'>Try again</a> or <a href='/forgot_lock_password'>Reset it</a>"
+
+@app.route('/unlock/<int:email_id>', methods=['POST'])
+def unlock_email(email_id):
+    if 'user_email' not in session:
+        return redirect('/login')
+    
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE emails SET is_locked = 0 WHERE id = ? AND user_email = ?", (email_id, session['user_email']))
+    conn.commit()
+    conn.close()
+    return redirect('/locked')
+
+@app.route('/delete_locked/<int:email_id>', methods=['POST'])
+def delete_locked_email(email_id):
+    if 'user_email' not in session:
+        return redirect('/login')
+    
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM emails WHERE id = ? AND user_email = ? AND is_locked = 1", (email_id, session['user_email']))
+    conn.commit()
+    conn.close()
+    return redirect('/locked')
 
 @app.route('/logout')
 def logout():
