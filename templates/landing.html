@@ -4,117 +4,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cold Email Generator - Professional Email Templates</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Cold Email Generator - AI-Powered Email Writing Tool</title>
+    <meta name="description" content="Generate professional cold emails instantly with AI. Perfect for freelancers, startups, and sales teams.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <h2>📧 EmailGen</h2>
+                <h2>✉️ EmailGen</h2>
             </div>
             <ul class="nav-menu">
+                <li><a href="#how-it-works">How it Works</a></li>
                 <li><a href="#features">Features</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="/login">Login</a></li>
-                <li><a href="/signup" class="cta-btn">Sign Up</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="/login" class="nav-link">Login</a></li>
+                <li><a href="/signup" class="cta-btn">Try Free</a></li>
                 <li><button id="darkModeToggle" class="dark-toggle">🌙</button></li>
             </ul>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </nav>
 
-    <header class="hero">
-        <div class="hero-content">
-            <h1>Generate Professional Cold Emails in Seconds</h1>
-            <p>Create compelling, personalized cold emails that get responses. Perfect for freelancers, sales teams, and business professionals.</p>
-            <div class="hero-buttons">
-                <a href="/signup" class="btn-primary">Get Started Free</a>
-                <a href="#features" class="btn-secondary">Learn More</a>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <div class="hero-gradient"></div>
+            <div class="floating-elements">
+                <div class="float-element"></div>
+                <div class="float-element"></div>
+                <div class="float-element"></div>
             </div>
         </div>
-        <div class="hero-image">
-            <div class="email-preview">
-                <div class="email-header">
-                    <span class="email-dot"></span>
-                    <span class="email-dot"></span>
-                    <span class="email-dot"></span>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-highlight">✉️ Send Better Cold Emails.</span>
+                        <span class="title-main">Instantly.</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        AI-crafted emails that help freelancers win clients — no writing skills needed.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="/signup" class="btn-primary">
+                            <i class="fas fa-magic"></i>
+                            Generate Free Email
+                        </a>
+                        <a href="#pricing" class="btn-secondary">
+                            <i class="fas fa-crown"></i>
+                            Upgrade for Unlimited
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number">10,000+</span>
+                            <span class="stat-label">Emails Generated</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">95%</span>
+                            <span class="stat-label">Success Rate</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">5min</span>
+                            <span class="stat-label">Average Response</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="email-content">
-                    <p>Subject: Partnership Opportunity</p>
-                    <p>Hi John,</p>
-                    <p>I noticed your company's recent expansion...</p>
+                <div class="hero-visual">
+                    <div class="email-mockup">
+                        <div class="email-header">
+                            <div class="email-controls">
+                                <span class="control red"></span>
+                                <span class="control yellow"></span>
+                                <span class="control green"></span>
+                            </div>
+                            <div class="email-title">Generated Cold Email</div>
+                        </div>
+                        <div class="email-content">
+                            <div class="email-field">
+                                <strong>Subject:</strong> Partnership Opportunity - Logo Design Services
+                            </div>
+                            <div class="email-body">
+                                Hi John,<br><br>
+                                I noticed your startup recently secured funding. Congratulations!<br><br>
+                                I'm a professional logo designer who specializes in creating memorable brand identities for tech startups...<br><br>
+                                Best regards,<br>
+                                Alex
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </header>
+    </section>
 
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Generate professional cold emails in 3 simple steps</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="step-number">01</div>
+                    <h3>Enter Your Service & Client</h3>
+                    <p>Tell us what you do and who you're targeting. Our AI understands your business.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <div class="step-number">02</div>
+                    <h3>Choose Your Tone</h3>
+                    <p>Select from friendly, professional, bold, or casual to match your brand voice.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="step-number">03</div>
+                    <h3>Get Email Instantly</h3>
+                    <p>Receive a perfectly crafted cold email ready to send and win clients.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
-            <h2>Why Choose Our Cold Email Generator?</h2>
+            <div class="section-header">
+                <h2>Why Choose EmailGen?</h2>
+                <p>Everything you need to create winning cold emails</p>
+            </div>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Lightning Fast</h3>
-                    <p>Generate professional emails in under 30 seconds with our AI-powered system.</p>
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Write Confidently in Seconds</h3>
+                    <p>No more staring at blank screens. Get professional emails instantly.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Personalized</h3>
-                    <p>Customize tone, length, and style to match your brand and target audience.</p>
+                    <div class="feature-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>Win More Upwork/Fiverr Projects</h3>
+                    <p>Stand out from the competition with compelling, personalized outreach.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>High Response Rate</h3>
-                    <p>Our templates are designed to maximize open rates and responses.</p>
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Supports English & Urdu</h3>
+                    <p>Reach clients in multiple languages with native-quality writing.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Secure & Private</h3>
-                    <p>Your data is encrypted and secure. We never share your information.</p>
+                    <div class="feature-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3>No Account Required</h3>
+                    <p>Start generating emails immediately - no lengthy signup process.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered Intelligence</h3>
+                    <p>Advanced AI understands context and creates personalized messages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Optimized</h3>
+                    <p>Generate emails on any device - desktop, tablet, or mobile.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="cta-section">
+    <!-- Live Demo Section -->
+    <section id="demo" class="demo-section">
         <div class="container">
-            <h2>Ready to Transform Your Outreach?</h2>
-            <p>Join thousands of professionals who trust our email generator</p>
-            <a href="/signup" class="btn-primary">Start Generating Emails</a>
+            <div class="section-header">
+                <h2>See It In Action</h2>
+                <p>Watch how easy it is to generate a professional cold email</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-form">
+                    <h3>Try the Generator</h3>
+                    <div class="form-group">
+                        <label>Your Service</label>
+                        <input type="text" value="Logo Design" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Client</label>
+                        <input type="text" value="Startup Founder" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Tone</label>
+                        <select disabled>
+                            <option>Professional</option>
+                        </select>
+                    </div>
+                    <button class="demo-btn" onclick="showDemoResult()">
+                        <i class="fas fa-magic"></i>
+                        Generate Email
+                    </button>
+                </div>
+                <div class="demo-result" id="demoResult">
+                    <h3>Generated Email</h3>
+                    <div class="email-preview">
+                        <div class="email-subject">
+                            <strong>Subject:</strong> Professional Logo Design for Your Startup
+                        </div>
+                        <div class="email-body">
+                            <p>Hi [Client Name],</p>
+                            <p>I came across your startup and was impressed by your innovative approach to [industry]. Your brand deserves a logo that reflects this innovation.</p>
+                            <p>As a professional logo designer, I specialize in creating memorable brand identities that help startups stand out in competitive markets. My designs have helped over 200+ startups establish their visual presence.</p>
+                            <p>I'd love to discuss how I can help bring your brand vision to life. Would you be available for a quick 15-minute call this week?</p>
+                            <p>Best regards,<br>[Your Name]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="section-header">
+                <h2>Simple, Transparent Pricing</h2>
+                <p>Choose the plan that works for you</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card free">
+                    <div class="pricing-header">
+                        <h3>Free Plan</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">0</span>
+                            <span class="period">/forever</span>
+                        </div>
+                    </div>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> 1 email per day</li>
+                        <li><i class="fas fa-check"></i> All email types</li>
+                        <li><i class="fas fa-check"></i> Multiple tones</li>
+                        <li><i class="fas fa-check"></i> Mobile friendly</li>
+                        <li><i class="fas fa-check"></i> No signup required</li>
+                    </ul>
+                    <a href="/signup" class="pricing-btn secondary">Get Started Free</a>
+                </div>
+                <div class="pricing-card pro featured">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Pro Plan</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">10</span>
+                            <span class="period">/one-time</span>
+                        </div>
+                        <div class="price-alt">
+                            <span>or Rs. 799</span>
+                        </div>
+                    </div>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> Unlimited emails</li>
+                        <li><i class="fas fa-check"></i> Priority generation</li>
+                        <li><i class="fas fa-check"></i> Advanced customization</li>
+                        <li><i class="fas fa-check"></i> Email templates library</li>
+                        <li><i class="fas fa-check"></i> WhatsApp support</li>
+                        <li><i class="fas fa-check"></i> Lifetime access</li>
+                    </ul>
+                    <a href="#" class="pricing-btn primary whatsapp-btn" onclick="openWhatsApp()">
+                        <i class="fab fa-whatsapp"></i>
+                        Message us on WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2>Frequently Asked Questions</h2>
+                <p>Everything you need to know about EmailGen</p>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Does it really work?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Our AI has been trained on thousands of successful cold emails. Users report 3x higher response rates compared to their previous emails.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Can I use Urdu language?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! EmailGen supports both English and Urdu, allowing you to reach clients in their preferred language.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What's the upgrade process?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Simply message us on WhatsApp with your email address. We'll process your payment and upgrade your account within minutes.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is my data secure?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, we take privacy seriously. Your data is encrypted and never shared with third parties. We only use it to generate your emails.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="final-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Outreach?</h2>
+                <p>Join thousands of freelancers who've already boosted their client acquisition</p>
+                <div class="cta-buttons">
+                    <a href="/signup" class="btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        Start Generating Emails
+                    </a>
+                    <a href="#" class="btn-secondary" onclick="openWhatsApp()">
+                        <i class="fab fa-whatsapp"></i>
+                        Get Pro Access
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>📧 EmailGen</h3>
-                    <p>Professional cold email generation made simple.</p>
+                <div class="footer-left">
+                    <div class="footer-logo">
+                        <h3>✉️ EmailGen</h3>
+                        <p>AI-powered cold email generation</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#features">Features</a>
+                        <a href="#pricing">Pricing</a>
+                        <a href="#demo">Demo</a>
+                        <a href="/login">Login</a>
+                    </div>
                 </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="/login">Login</a></li>
-                        <li><a href="/signup">Sign Up</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="#privacy">Privacy Policy</a></li>
-                        <li><a href="#terms">Terms of Service</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Follow Us</h4>
+                <div class="footer-right">
+                    <div class="footer-made">
+                        <p>Made with 💙 by <a href="#" target="_blank">YourName</a> using OpenRouter AI</p>
+                    </div>
                     <div class="social-links">
-                        <a href="#" class="social-link">📘</a>
-                        <a href="#" class="social-link">🐦</a>
-                        <a href="#" class="social-link">💼</a>
+                        <a href="#" class="social-link" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" class="social-link" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="social-link" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -123,6 +407,11 @@
             </div>
         </div>
     </footer>
+
+    <!-- Floating WhatsApp Button (Mobile) -->
+    <div class="floating-whatsapp" onclick="openWhatsApp()">
+        <i class="fab fa-whatsapp"></i>
+    </div>
 
     <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 </body>
