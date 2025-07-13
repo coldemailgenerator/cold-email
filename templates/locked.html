@@ -1,115 +1,188 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 Locked Emails - EmailGen</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/locked.css') }}">
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h2>📧 EmailGen</h2>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="/generate email">Generate</a></li>
-                <li><a href="/home">Home</a></li>
-                <li><a href="/archived">Archived</a></li>
-                <li><a href="/locked" class="active">Locked</a></li>
-                <li><a href="/profile">Profile</a></li>
-                <li><button id="darkModeToggle" class="dark-toggle">🌙</button></li>
-            </ul>
-        </div>
-    </nav>
+{% extends 'base.html' %}
 
+{% block title %}Locked Emails - EmailGen{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #ff9800, #f57c00);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 3rem;
+    }
+
+    .locked-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+        border-left: 4px solid #ff9800;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .locked-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .lock-indicator {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        color: #ff9800;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .email-content {
+        background: var(--bg-color);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        font-family: 'Courier New', monospace;
+        max-height: 200px;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .email-content::before {
+        content: 'LOCKED';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ff9800;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 5px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .email-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .btn-unlock {
+        background: var(--accent-color);
+        border: none;
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-unlock:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-color);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #ff9800;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 0;
+        }
+        
+        .email-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
     <div class="container">
-        <div class="header-section">
-            <h1>🔐 Locked Emails</h1>
-            <p>Your private and secure email templates</p>
-            <a href="/home" class="back-btn">← Back to Home</a>
-        </div>
-
-        <div class="locked-section">
-            {% if emails %}
-                <div class="emails-grid">
-                    {% for email in emails %}
-                    <div class="email-card locked-card">
-                        <div class="email-header">
-                            <div class="email-meta">
-                                <span class="email-date">Locked on: {{ email[2] }}</span>
-                                <span class="email-id">#{{ email[0] }}</span>
-                            </div>
-                            <div class="lock-indicator">🔒</div>
-                        </div>
-                        <div class="email-content">
-                            {{ email[1] }}
-                        </div>
-                        <div class="email-footer">
-                            <div class="email-actions">
-                                <form action="/unlock/{{ email[0] }}" method="POST" class="inline-form">
-                                    <button type="submit" class="btn-unlock">🔓 Unlock</button>
-                                </form>
-                                <form action="/delete_locked/{{ email[0] }}" method="POST" 
-                                      class="inline-form"
-                                      onsubmit="return confirm('Delete this locked email permanently?');">
-                                    <button type="submit" class="btn-delete">🗑️ Delete</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <div class="empty-icon">🔒</div>
-                    <h2>No locked emails</h2>
-                    <p>You haven't locked any emails yet. Lock emails from your home page to keep them secure.</p>
-                    <a href="/home" class="btn-primary">Go to Home</a>
-                </div>
-            {% endif %}
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-lock me-3"></i>Locked Emails
+                </h1>
+                <p class="lead mb-0">Your private and secure email templates</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/home" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
+            </div>
         </div>
     </div>
+</div>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>📧 EmailGen</h3>
-                    <p>Professional cold email generation made simple.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="/generate email">Generate</a></li>
-                        <li><a href="/home">Home</a></li>
-                        <li><a href="/profile">Profile</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="#privacy">Privacy Policy</a></li>
-                        <li><a href="#terms">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="#" class="social-link">📘</a>
-                        <a href="#" class="social-link">🐦</a>
-                        <a href="#" class="social-link">💼</a>
+<div class="container">
+    {% if emails %}
+        <div class="row">
+            {% for email in emails %}
+            <div class="col-lg-6 col-xl-4">
+                <div class="locked-card">
+                    <div class="lock-indicator">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    
+                    <div class="email-header mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-primary mb-1">#{{ email[0] }}</h6>
+                                <small class="text-muted">Locked on: {{ email[2] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="email-content">{{ email[1] }}</div>
+                    
+                    <div class="email-actions">
+                        <form action="/unlock/{{ email[0] }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-unlock">
+                                <i class="fas fa-unlock me-2"></i>Unlock
+                            </button>
+                        </form>
+                        <form action="/delete_locked/{{ email[0] }}" method="POST" class="d-inline"
+                              onsubmit="return confirm('Delete this locked email permanently?');">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 EmailGen. All rights reserved.</p>
-            </div>
+            {% endfor %}
         </div>
-    </footer>
-
-    <script src="{{ url_for('static', filename='js/locked.js') }}"></script>
-</body>
-</html>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2 class="h3 mb-3">No locked emails</h2>
+            <p class="lead mb-4">You haven't locked any emails yet. Lock emails from your home page to keep them secure.</p>
+            <a href="/home" class="btn btn-primary btn-lg">
+                <i class="fas fa-home me-2"></i>Go to Home
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

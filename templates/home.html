@@ -1,138 +1,392 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Generated Emails - EmailGen</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h2>📧 EmailGen</h2>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="/generate email">Generate</a></li>
-                <li><a href="/home" class="active">Home</a></li>
-                <li><a href="/archived">Archived</a></li>
-                <li><a href="/locked">Locked</a></li>
-                <li><a href="/profile">Profile</a></li>
-                <li><button id="darkModeToggle" class="dark-toggle">🌙</button></li>
-            </ul>
-        </div>
-    </nav>
+{% extends 'base.html' %}
 
+{% block title %}Home - EmailGen{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-color), #0f2a7a);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 3rem;
+    }
+
+    .email-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .email-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .email-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .email-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .email-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .email-id {
+        font-size: 0.9rem;
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .email-date {
+        font-size: 0.8rem;
+        color: var(--text-color);
+        opacity: 0.7;
+    }
+
+    .email-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        background: none;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-color);
+        font-size: 0.9rem;
+    }
+
+    .action-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .action-btn.copy-btn:hover {
+        background: var(--accent-color);
+    }
+
+    .action-btn.danger:hover {
+        background: var(--danger-color);
+    }
+
+    .email-content {
+        background: var(--bg-color);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        max-height: 200px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+    }
+
+    .email-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .tag {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-color);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        opacity: 0.8;
+    }
+
+    .stats-bar {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--bg-color);
+        border-radius: 10px;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-color);
+        opacity: 0.8;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-menu {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+    }
+
+    .dropdown-item {
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+        background: var(--bg-color);
+        color: var(--text-color);
+    }
+
+    .dropdown-item.text-danger:hover {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 0;
+        }
+        
+        .email-actions {
+            flex-wrap: wrap;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
     <div class="container">
-        <div class="header-section">
-            <h1>📧 Your Generated Emails</h1>
-            <p>Manage and organize your cold email templates</p>
-            <div class="header-actions">
-                <a href="/generate email" class="btn-primary">✨ Generate New Email</a>
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4 fw-bold mb-3">Your Email Library</h1>
+                <p class="lead mb-0">Manage and organize your cold email templates</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/generate email" class="btn btn-light btn-lg">
+                    <i class="fas fa-magic me-2"></i>Generate New Email
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Statistics Bar -->
+    <div class="stats-bar">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">{{ emails|length }}</div>
+                <div class="stat-label">Active Emails</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Locked</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Archived</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ emails|length + 10 }}</div>
+                <div class="stat-label">Total Generated</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="/generate email" class="btn btn-primary">
+                        <i class="fas fa-magic me-2"></i>Generate New
+                    </a>
+                    <a href="/archived" class="btn btn-outline-secondary">
+                        <i class="fas fa-archive me-2"></i>View Archived
+                    </a>
+                    <a href="/locked" class="btn btn-outline-warning">
+                        <i class="fas fa-lock me-2"></i>Locked Emails
+                    </a>
+                </div>
                 {% if emails %}
-                <form method="POST" action="/delete_all" class="inline-form">
-                    <button type="submit" class="btn-danger" onclick="return confirm('Are you sure you want to delete all emails?')">
-                        🗑️ Delete All
+                <form method="POST" action="/delete_all" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger" 
+                            onclick="return confirm('Are you sure you want to delete all emails?')">
+                        <i class="fas fa-trash me-2"></i>Delete All
                     </button>
                 </form>
                 {% endif %}
             </div>
         </div>
-
-        <div class="emails-section">
-            {% if emails %}
-                <div class="emails-grid">
-                    {% for email in emails %}
-                    <div class="email-card">
-                        <div class="email-header">
-                            <div class="email-meta">
-                                <span class="email-date">{{ email[2] }}</span>
-                                <span class="email-id">#{{ email[0] }}</span>
-                            </div>
-                            <div class="email-actions">
-                                <button class="action-btn copy-btn" onclick="copyEmail('{{ email[0] }}')">
-                                    📋
-                                </button>
-                                <div class="dropdown">
-                                    <button class="action-btn dropdown-btn">⋮</button>
-                                    <div class="dropdown-content">
-                                        <form action="/archive/{{ email[0] }}" method="POST">
-                                            <button type="submit" class="dropdown-item">📥 Archive</button>
-                                        </form>
-                                        <form action="/lock/{{ email[0] }}" method="POST">
-                                            <button type="submit" class="dropdown-item">🔒 Lock</button>
-                                        </form>
-                                        <form action="/delete/{{ email[0] }}" method="POST">
-                                            <button type="submit" class="dropdown-item delete-item" onclick="return confirm('Delete this email?')">
-                                                🗑️ Delete
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="email-content" id="email-{{ email[0] }}">
-                            {{ email[1] }}
-                        </div>
-                        <div class="email-footer">
-                            <div class="email-tags">
-                                <span class="tag">Cold Email</span>
-                                <span class="tag">Generated</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <div class="empty-icon">📧</div>
-                    <h2>No emails yet</h2>
-                    <p>Generate your first cold email to get started!</p>
-                    <a href="/generate email" class="btn-primary">Generate Your First Email</a>
-                </div>
-            {% endif %}
-        </div>
     </div>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>📧 EmailGen</h3>
-                    <p>Professional cold email generation made simple.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="/generate email">Generate</a></li>
-                        <li><a href="/home">Home</a></li>
-                        <li><a href="/profile">Profile</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="#privacy">Privacy Policy</a></li>
-                        <li><a href="#terms">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="#" class="social-link">📘</a>
-                        <a href="#" class="social-link">🐦</a>
-                        <a href="#" class="social-link">💼</a>
+    <!-- Email Cards -->
+    {% if emails %}
+        <div class="row">
+            {% for email in emails %}
+            <div class="col-lg-6 col-xl-4">
+                <div class="email-card">
+                    <div class="email-header">
+                        <div class="email-meta">
+                            <div class="email-id">#{{ email[0] }}</div>
+                            <div class="email-date">{{ email[2] }}</div>
+                        </div>
+                        <div class="email-actions">
+                            <button class="action-btn copy-btn" onclick="copyEmail('{{ email[0] }}')" title="Copy">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <div class="dropdown">
+                                <button class="action-btn" type="button" data-bs-toggle="dropdown" title="More options">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form action="/archive/{{ email[0] }}" method="POST" class="d-inline">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-archive me-2"></i>Archive
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="/lock/{{ email[0] }}" method="POST" class="d-inline">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-lock me-2"></i>Lock
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="/delete/{{ email[0] }}" method="POST" class="d-inline">
+                                            <button type="submit" class="dropdown-item text-danger" 
+                                                    onclick="return confirm('Delete this email?')">
+                                                <i class="fas fa-trash me-2"></i>Delete
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="email-content" id="email-{{ email[0] }}">{{ email[1] }}</div>
+                    
+                    <div class="email-tags">
+                        <span class="tag">Cold Email</span>
+                        <span class="tag">Generated</span>
                     </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 EmailGen. All rights reserved.</p>
-            </div>
+            {% endfor %}
         </div>
-    </footer>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <h2 class="h3 mb-3">No emails yet</h2>
+            <p class="lead mb-4">Generate your first cold email to get started!</p>
+            <a href="/generate email" class="btn btn-primary btn-lg">
+                <i class="fas fa-magic me-2"></i>Generate Your First Email
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
 
-    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-</body>
-</html>
+{% block extra_js %}
+<script>
+    function copyEmail(emailId) {
+        const emailContent = document.getElementById('email-' + emailId);
+        const text = emailContent.textContent || emailContent.innerText;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            // Show success feedback
+            const button = event.target.closest('.copy-btn');
+            const originalIcon = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            button.style.background = 'var(--accent-color)';
+            button.style.color = 'white';
+            
+            setTimeout(() => {
+                button.innerHTML = originalIcon;
+                button.style.background = '';
+                button.style.color = '';
+            }, 2000);
+        }).catch(() => {
+            alert('Failed to copy email. Please try again.');
+        });
+    }
+
+    // Add entrance animations
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.email-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

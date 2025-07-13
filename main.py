@@ -301,6 +301,11 @@ def forgot_lock_password():
             
     return "❌ Incorrect lock password. <a href='/locked'>Try again</a> or <a href='/forgot_lock_password'>Reset it</a>"
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
+
 
     
 

@@ -1,258 +1,457 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cold Email Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+{% extends 'base.html' %}
+
+{% block title %}Generate Email - EmailGen{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-color), #0f2a7a);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 3rem;
+    }
+
+    .form-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid var(--border-color);
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        background: var(--card-bg);
+        color: var(--text-color);
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(16, 52, 166, 0.25);
+        background: var(--card-bg);
+        color: var(--text-color);
+    }
+
+    .generate-btn {
+        background: linear-gradient(135deg, var(--primary-color), #0f2a7a);
+        border: none;
+        border-radius: 25px;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .generate-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .result-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+        display: none;
+    }
+
+    .success-card {
+        border-left: 4px solid var(--accent-color);
+    }
+
+    .error-card {
+        border-left: 4px solid var(--danger-color);
+    }
+
+    .email-output {
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        font-family: 'Courier New', monospace;
+        white-space: pre-wrap;
+        line-height: 1.6;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+    }
+
+    .copy-btn {
+        background: var(--accent-color);
+        border: none;
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .usage-info {
+        background: var(--bg-color);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .feature-highlight {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .feature-item {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 0;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        
+        .form-card {
+            padding: 1.5rem;
         }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
+        
+        .action-buttons {
+            flex-direction: column;
         }
-        .form-group {
-            margin-bottom: 20px;
+        
+        .feature-grid {
+            grid-template-columns: 1fr;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-        .submit-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 100%;
-            transition: background-color 0.3s;
-        }
-        .submit-btn:hover {
-            background-color: #45a049;
-        }
-        .submit-btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 5px;
-            display: none;
-        }
-        .success {
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
-        .error {
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-        }
-        .email-output {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 15px;
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-        }
-        .usage-info {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #666;
-        }
-        .payment-link {
-            margin-top: 15px;
-        }
-        .payment-link a {
-            background-color: #25D366;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-        }
-        .loading {
-            text-align: center;
-            color: #666;
-        }
-    </style>
-</head>
-<body>
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
     <div class="container">
-        <h1>🔥 Cold Email Generator</h1>
-        
-        <form id="emailForm">
-            <div class="form-group">
-                <label for="user_id">Your ID (Email or Phone) *</label>
-                <input type="text" id="user_id" name="user_id" required 
-                       placeholder="e.g., john@example.com or +9234567890">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-magic me-3"></i>Cold Email Generator
+                </h1>
+                <p class="lead mb-0">Create compelling cold emails that get results</p>
             </div>
-            
-            <div class="form-group">
-                <label for="service">Your Service *</label>
-                <input type="text" id="service" name="service" required 
-                       placeholder="e.g., logo design, web development, copywriting">
+            <div class="col-md-4 text-md-end">
+                <a href="/home" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
             </div>
-            
-            <div class="form-group">
-                <label for="client_type">Client Type *</label>
-                <input type="text" id="client_type" name="client_type" required 
-                       placeholder="e.g., startup founder, small business owner, marketing manager">
-            </div>
-            
-            <div class="form-group">
-                <label for="tone">Email Tone</label>
-                <select id="tone" name="tone">
-                    <option value="friendly">Friendly</option>
-                    <option value="professional" selected>Professional</option>
-                    <option value="bold">Bold</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="email_type">Email Type</label>
-                <select id="email_type" name="email_type">
-                    <option value="proposal">Proposal</option>
-                    <option value="followup">Follow-up</option>
-                    <option value="job_pitch">Job Pitch</option>
-                    <option value="general" selected>General Outreach</option>
-                </select>
-            </div>
-            <div>
-                <label>Choose Email Length (optional):</label><br>
-                <select name="length">
-                  <option value="short">Short (50–100 words)</option>
-                  <option value="medium" selected>Medium (100–200 words)</option>
-                  <option value="long">Long (200–300 words)</option>
-                </select><br><br>
+        </div>
+    </div>
+</div>
 
-                <label>Custom Word Limit :</label><br>
-                <input type="number" name="word_limit" min="50" max="500"><br><br>
-
+<div class="container">
+    <!-- Features Highlight -->
+    <div class="feature-highlight">
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h5>AI-Powered</h5>
+                <p class="text-muted">Advanced AI creates personalized emails</p>
             </div>
-
-            
-            <button type="submit" class="submit-btn" id="submitBtn">
-                Generate Cold Email
-            </button>
-        </form>
-        
-        <div id="result" class="result">
-            <div id="resultContent"></div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-target"></i>
+                </div>
+                <h5>Targeted</h5>
+                <p class="text-muted">Customized for your specific audience</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h5>High Converting</h5>
+                <p class="text-muted">Optimized for better response rates</p>
+            </div>
         </div>
     </div>
 
-    <script>
-        document.getElementById('emailForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form id="emailForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="user_id" class="form-label">
+                                <i class="fas fa-user me-2"></i>Your ID (Email or Phone) *
+                            </label>
+                            <input type="text" class="form-control" id="user_id" name="user_id" required 
+                                   placeholder="e.g., john@example.com or +1234567890">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="service" class="form-label">
+                                <i class="fas fa-briefcase me-2"></i>Your Service *
+                            </label>
+                            <input type="text" class="form-control" id="service" name="service" required 
+                                   placeholder="e.g., web development, design, marketing">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="client_type" class="form-label">
+                            <i class="fas fa-users me-2"></i>Target Client Type *
+                        </label>
+                        <input type="text" class="form-control" id="client_type" name="client_type" required 
+                               placeholder="e.g., startup founder, small business owner, marketing manager">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tone" class="form-label">
+                                <i class="fas fa-comments me-2"></i>Email Tone
+                            </label>
+                            <select class="form-select" id="tone" name="tone">
+                                <option value="friendly">Friendly & Approachable</option>
+                                <option value="professional" selected>Professional & Formal</option>
+                                <option value="bold">Bold & Confident</option>
+                                <option value="casual">Casual & Relaxed</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="email_type" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email Type
+                            </label>
+                            <select class="form-select" id="email_type" name="email_type">
+                                <option value="proposal">Service Proposal</option>
+                                <option value="followup">Follow-up Email</option>
+                                <option value="job_pitch">Job Application</option>
+                                <option value="general" selected>General Outreach</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="length" class="form-label">
+                                <i class="fas fa-ruler me-2"></i>Email Length
+                            </label>
+                            <select class="form-select" id="length" name="length">
+                                <option value="short">Short (50-100 words)</option>
+                                <option value="medium" selected>Medium (100-200 words)</option>
+                                <option value="long">Long (200-300 words)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="word_limit" class="form-label">
+                                <i class="fas fa-hashtag me-2"></i>Custom Word Limit
+                            </label>
+                            <input type="number" class="form-control" id="word_limit" name="word_limit" 
+                                   min="50" max="500" placeholder="Optional: 50-500 words">
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="generate-btn" id="submitBtn">
+                            <i class="fas fa-magic me-2"></i>Generate Cold Email
+                        </button>
+                    </div>
+                </form>
+            </div>
             
-            const submitBtn = document.getElementById('submitBtn');
-            const result = document.getElementById('result');
-            const resultContent = document.getElementById('resultContent');
-            
-            // Show loading state
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Generating...';
-            result.style.display = 'block';
-            result.className = 'result';
-            resultContent.innerHTML = '<div class="loading">🤖 Generating your cold email...</div>';
-         
-            // Get form data
-            const formData = new FormData(this);
-            
-            try {
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    result.className = 'result success';
-                    resultContent.innerHTML = `
-                        <h3>✅ Your Cold Email:</h3>
-                       <div class="email-output" id="emailText">${data.email}</div>
-                       <button onclick="copyEmail()" class="submit-btn" style="margin-top: 15px;"> 
-                       📋 Copy to Clipboard</button>
+            <div id="result" class="result-card">
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-                        <div class="usage-info">
-                            ${data.is_paid_user ? 
-                                '🎉 You have unlimited access!' : 
-                                `📊 Free emails remaining: ${data.remaining_free}`
-                            }
+{% block extra_js %}
+<script>
+    document.getElementById('emailForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const result = document.getElementById('result');
+        const resultContent = document.getElementById('resultContent');
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading-spinner me-2"></span>Generating...';
+        result.style.display = 'block';
+        result.className = 'result-card';
+        resultContent.innerHTML = `
+            <div class="text-center">
+                <div class="loading-spinner mx-auto mb-3" style="width: 40px; height: 40px; border-width: 4px;"></div>
+                <h4>🤖 Generating your cold email...</h4>
+                <p class="text-muted">This may take a few seconds</p>
+            </div>
+        `;
+        
+        // Scroll to result
+        result.scrollIntoView({ behavior: 'smooth' });
+        
+        // Get form data
+        const formData = new FormData(this);
+        
+        try {
+            const response = await fetch('/generate', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                result.className = 'result-card success-card';
+                resultContent.innerHTML = `
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-check-circle text-success me-2" style="font-size: 1.5rem;"></i>
+                        <h4 class="mb-0">Your Cold Email is Ready!</h4>
+                    </div>
+                    <div class="email-output" id="emailText">${data.email}</div>
+                    <div class="action-buttons">
+                        <button onclick="copyEmail()" class="copy-btn">
+                            <i class="fas fa-copy me-2"></i>Copy to Clipboard
+                        </button>
+                        <a href="/home" class="btn btn-outline-primary">
+                            <i class="fas fa-home me-2"></i>Back to Home
+                        </a>
+                        <button onclick="generateAnother()" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo me-2"></i>Generate Another
+                        </button>
+                        <a href="/profile" class="btn btn-outline-info">
+                            <i class="fas fa-user me-2"></i>View Profile
+                        </a>
+                    </div>
+                    <div class="usage-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        ${data.is_paid_user ? 
+                            '<strong>Pro Account:</strong> You have unlimited access!' : 
+                            `<strong>Free Account:</strong> ${data.remaining_free} free emails remaining`
+                        }
+                    </div>
+                `;
+            } else {
+                result.className = 'result-card error-card';
+                let errorHtml = `
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-exclamation-circle text-danger me-2" style="font-size: 1.5rem;"></i>
+                        <h4 class="mb-0">Error</h4>
+                    </div>
+                    <p class="mb-3">${data.error}</p>
+                `;
+                
+                if (data.payment_link) {
+                    errorHtml += `
+                        <div class="text-center">
+                            <a href="${data.payment_link}" target="_blank" class="btn btn-success">
+                                <i class="fab fa-whatsapp me-2"></i>Contact on WhatsApp
+                            </a>
                         </div>
                     `;
-                } else {
-                    result.className = 'result error';
-                    let errorHtml = `<h3>❌ Error:</h3><p>${data.error}</p>`;
-                    
-                    if (data.payment_link) {
-                        errorHtml += `
-                            <div class="payment-link">
-                                <a href="${data.payment_link}" target="_blank">
-                                    💬 Contact on WhatsApp
-                                </a>
-                            </div>
-                        `;
-                    }
-                    
-                    resultContent.innerHTML = errorHtml;
                 }
-            } catch (error) {
-                result.className = 'result error';
-                resultContent.innerHTML = `
-                    <h3>❌ Error:</h3>
-                    <p>Network error. Please check your connection and try again.</p>
-                `;
+                
+                resultContent.innerHTML = errorHtml;
             }
-            
-            // Reset button
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Generate Cold Email';
-        });
-
-        function copyEmail() {
-            const emailText = document.getElementById('emailText').innerText;
-            navigator.clipboard.writeText(emailText).then(() => {
-                alert("📋 Email copied to clipboard!");
-            }).catch(() => {
-                alert("❌ Failed to copy. Try manually.");
-            });
+        } catch (error) {
+            result.className = 'result-card error-card';
+            resultContent.innerHTML = `
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-exclamation-circle text-danger me-2" style="font-size: 1.5rem;"></i>
+                    <h4 class="mb-0">Network Error</h4>
+                </div>
+                <p>Please check your connection and try again.</p>
+            `;
         }
+        
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Generate Cold Email';
+    });
 
-    </script>
-</body>
-</html>
+    function copyEmail() {
+        const emailText = document.getElementById('emailText').innerText;
+        navigator.clipboard.writeText(emailText).then(() => {
+            const btn = event.target.closest('.copy-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
+            btn.style.background = '#28a745';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }).catch(() => {
+            alert("❌ Failed to copy. Try manually selecting the text.");
+        });
+    }
+
+    function generateAnother() {
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('emailForm').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+{% endblock %}

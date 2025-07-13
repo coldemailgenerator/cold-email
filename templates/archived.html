@@ -1,40 +1,205 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>📥 Archived Emails</title>
-</head>
-<body>
-    <h2>📥 Archived Emails</h2>
-    <a href="/home">← Back to Home</a>
-    <hr>
-    <form action="/delete_all_archived" method="POST" onsubmit="return confirm('⚠️ Are you sure you want to delete ALL archived emails?');">
-        <button type="submit">❌ Delete All Archived</button>
-    </form>
+
+{% extends 'base.html' %}
+
+{% block title %}Archived Emails - EmailGen{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 3rem;
+    }
+
+    .archived-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+        border-left: 4px solid #17a2b8;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .archived-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .archive-indicator {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        color: #17a2b8;
+    }
+
+    .email-content {
+        background: var(--bg-color);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        font-family: 'Courier New', monospace;
+        max-height: 200px;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .email-content::before {
+        content: 'ARCHIVED';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #17a2b8;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 5px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .email-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .btn-unarchive {
+        background: var(--info-color);
+        border: none;
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-unarchive:hover {
+        background: #138496;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-color);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #17a2b8;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 0;
+        }
+        
+        .email-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-archive me-3"></i>Archived Emails
+                </h1>
+                <p class="lead mb-0">Your archived email templates</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/home" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Action Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex gap-2">
+                    <a href="/home" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>Home
+                    </a>
+                    <a href="/locked" class="btn btn-outline-warning">
+                        <i class="fas fa-lock me-2"></i>Locked Emails
+                    </a>
+                </div>
+                {% if emails %}
+                <form action="/delete_all_archived" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger" 
+                            onclick="return confirm('⚠️ Are you sure you want to delete ALL archived emails?');">
+                        <i class="fas fa-trash me-2"></i>Delete All Archived
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
     {% if emails %}
-        <ul>
+        <div class="row">
             {% for email in emails %}
-            <li>
-              <p>{{ email[1] }}</p>
-              <small>Archived on: {{ email[2] }}</small><br><br>
-
-              <form action="/unarchive/{{ email[0] }}" method="POST" style="display:inline;">
-                  <button type="submit">↩️ Unarchive</button>
-              </form>
-
-                <form action="/delete_archived/{{ email[0] }}" method="POST" 
-                      style="display:inline;" 
-                      onsubmit="return confirm('Delete this email?');">
-                    <button type="submit">🗑️ Delete</button>
-                </form>
-
-              <hr>
-            </li>
-
+            <div class="col-lg-6 col-xl-4">
+                <div class="archived-card">
+                    <div class="archive-indicator">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    
+                    <div class="email-header mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-primary mb-1">#{{ email[0] }}</h6>
+                                <small class="text-muted">Archived on: {{ email[2] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="email-content">{{ email[1] }}</div>
+                    
+                    <div class="email-actions">
+                        <form action="/unarchive/{{ email[0] }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-unarchive">
+                                <i class="fas fa-undo me-2"></i>Unarchive
+                            </button>
+                        </form>
+                        <form action="/delete_archived/{{ email[0] }}" method="POST" class="d-inline"
+                              onsubmit="return confirm('Delete this email permanently?');">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
+        </div>
     {% else %}
-        <p>No archived emails found.</p>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-archive"></i>
+            </div>
+            <h2 class="h3 mb-3">No archived emails</h2>
+            <p class="lead mb-4">You haven't archived any emails yet. Archive emails from your home page to organize them.</p>
+            <a href="/home" class="btn btn-primary btn-lg">
+                <i class="fas fa-home me-2"></i>Go to Home
+            </a>
+        </div>
     {% endif %}
-</body>
-</html>
+</div>
+{% endblock %}
