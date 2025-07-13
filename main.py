@@ -44,28 +44,28 @@ def index():
 def profile():
     if 'user_email' not in session:
         return redirect('/login')
-    
+
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
-    
+
     # Get total emails
     cursor.execute("SELECT COUNT(*) FROM emails WHERE user_email = ?", (session['user_email'],))
     total_emails = cursor.fetchone()[0]
-    
+
     # Get archived emails
     cursor.execute("SELECT COUNT(*) FROM emails WHERE user_email = ? AND is_archived = 1", (session['user_email'],))
     archived_emails = cursor.fetchone()[0]
-    
+
     # Get locked emails
     cursor.execute("SELECT COUNT(*) FROM emails WHERE user_email = ? AND is_locked = 1", (session['user_email'],))
     locked_emails = cursor.fetchone()[0]
-    
+
     # Get active emails (non-archived, non-locked)
     cursor.execute("SELECT COUNT(*) FROM emails WHERE user_email = ? AND is_archived = 0 AND is_locked = 0", (session['user_email'],))
     active_emails = cursor.fetchone()[0]
-    
+
     conn.close()
-    
+
     return render_template('profile.html', 
                          total_emails=total_emails,
                          archived_emails=archived_emails,
@@ -324,14 +324,14 @@ def forgot_lock_password():
             return redirect('/set_lock_password')
         else:
             conn.close()
-            
+
     return "❌ Incorrect lock password. <a href='/locked'>Try again</a> or <a href='/forgot_lock_password'>Reset it</a>"
 
 @app.route('/unlock/<int:email_id>', methods=['POST'])
 def unlock_email(email_id):
     if 'user_email' not in session:
         return redirect('/login')
-    
+
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
     cursor.execute("UPDATE emails SET is_locked = 0 WHERE id = ? AND user_email = ?", (email_id, session['user_email']))
@@ -343,7 +343,7 @@ def unlock_email(email_id):
 def delete_locked_email(email_id):
     if 'user_email' not in session:
         return redirect('/login')
-    
+
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
     cursor.execute("DELETE FROM emails WHERE id = ? AND user_email = ? AND is_locked = 1", (email_id, session['user_email']))
@@ -355,29 +355,29 @@ def delete_locked_email(email_id):
 def change_password():
     if 'user_email' not in session:
         return jsonify({'success': False, 'error': 'Not logged in'}), 401
-    
+
     current_password = request.form.get('current_password')
     new_password = request.form.get('new_password')
-    
+
     if not current_password or not new_password:
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
-    
+
     if len(new_password) < 6:
         return jsonify({'success': False, 'error': 'New password must be at least 6 characters'}), 400
-    
+
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
     cursor.execute("SELECT password FROM users WHERE email = ?", (session['user_email'],))
     result = cursor.fetchone()
-    
+
     if not result or result[0] != current_password:
         conn.close()
         return jsonify({'success': False, 'error': 'Current password is incorrect'}), 400
-    
+
     cursor.execute("UPDATE users SET password = ? WHERE email = ?", (new_password, session['user_email']))
     conn.commit()
     conn.close()
-    
+
     return jsonify({'success': True, 'message': 'Password changed successfully'})
 
 @app.route('/logout')
@@ -385,9 +385,16 @@ def logout():
     session.clear()
     return redirect('/')
 
+# Add missing route handlers
+@app.route('/templates')
+def templates():
+    if 'user_email' not in session:
+        return redirect('/login')
+    return render_template('templates.html')
 
-    
+@app.route('/forgot-password')
+def forgot_password():
+    return render_template('forgot_password.html')
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

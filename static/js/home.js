@@ -1,94 +1,115 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Dark mode toggle
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const body = document.body;
-    
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        body.setAttribute('data-theme', savedTheme);
-        darkModeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-    }
-    
-    darkModeToggle.addEventListener('click', function() {
-        const currentTheme = body.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    // Animate stats on scroll
+    const statNumbers = document.querySelectorAll('.stat-content h3');
+    let statsAnimated = false;
+
+    function animateStats() {
+        if (statsAnimated) return;
         
-        body.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        darkModeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-    });
-    
-    // Initialize dropdowns
-    document.querySelectorAll('.dropdown').forEach(dropdown => {
-        const btn = dropdown.querySelector('.dropdown-btn');
-        const content = dropdown.querySelector('.dropdown-content');
-        
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
+        statNumbers.forEach((stat, index) => {
+            const targetText = stat.textContent;
+            const targetNumber = parseInt(targetText.replace(/[^\d]/g, ''));
             
-            // Close other dropdowns
-            document.querySelectorAll('.dropdown-content').forEach(dc => {
-                if (dc !== content) {
-                    dc.style.display = 'none';
-                }
-            });
-            
-            // Toggle current dropdown
-            content.style.display = content.style.display === 'block' ? 'none' : 'block';
-        });
-    });
-    
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function() {
-        document.querySelectorAll('.dropdown-content').forEach(dc => {
-            dc.style.display = 'none';
-        });
-    });
-    
-    // Add animation to email cards
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
+            if (!isNaN(targetNumber) && targetNumber > 0) {
+                let current = 0;
+                const increment = targetNumber / 30;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= targetNumber) {
+                        current = targetNumber;
+                        clearInterval(timer);
+                    }
+                    stat.textContent = targetText.replace(/\d+/, Math.floor(current));
+                }, 50);
             }
         });
-    }, observerOptions);
-    
-    document.querySelectorAll('.email-card').forEach(card => {
+        
+        statsAnimated = true;
+    }
+
+    // Intersection Observer for stats animation
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateStats();
+                }
+            });
+        }, { threshold: 0.5 });
+
+        observer.observe(statsSection);
+    }
+
+    // Add loading state to buttons
+    const actionButtons = document.querySelectorAll('.action-btn, .btn-hero, .empty-cta');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Add subtle loading animation
+            this.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+    });
+
+    // Floating card animation enhancement
+    const floatingCard = document.querySelector('.floating-card');
+    if (floatingCard) {
+        floatingCard.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-15px) scale(1.05)';
+        });
+        
+        floatingCard.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+        });
+    }
+
+    // Tips section interactivity
+    const tips = document.querySelectorAll('.tip');
+    tips.forEach(tip => {
+        tip.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(16, 52, 166, 0.05)';
+            this.style.borderRadius = '8px';
+            this.style.transform = 'translateX(10px)';
+        });
+        
+        tip.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.borderRadius = '';
+            this.style.transform = '';
+        });
+    });
+
+    // Welcome message time-based greeting
+    const welcomeTitle = document.querySelector('.hero-text h1');
+    if (welcomeTitle) {
+        const hour = new Date().getHours();
+        let greeting = 'Welcome back';
+        
+        if (hour < 12) {
+            greeting = 'Good morning';
+        } else if (hour < 17) {
+            greeting = 'Good afternoon';
+        } else {
+            greeting = 'Good evening';
+        }
+        
+        const userName = welcomeTitle.textContent.split(',')[1];
+        welcomeTitle.textContent = `${greeting},${userName}`;
+    }
+
+    // Progressive loading animation for cards
+    const cards = document.querySelectorAll('.stat-card, .action-card');
+    cards.forEach((card, index) => {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
-        card.style.transition = 'all 0.6s ease';
-        observer.observe(card);
-    });
-});
-
-// Copy email function
-function copyEmail(emailId) {
-    const emailContent = document.getElementById('email-' + emailId);
-    const text = emailContent.textContent || emailContent.innerText;
-    
-    navigator.clipboard.writeText(text).then(() => {
-        // Show success feedback
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = '✅';
-        button.style.background = 'var(--accent-color)';
-        button.style.color = 'white';
         
         setTimeout(() => {
-            button.textContent = originalText;
-            button.style.background = '';
-            button.style.color = '';
-        }, 2000);
-    }).catch(() => {
-        alert('Failed to copy email. Please try again.');
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
     });
-}
+});
