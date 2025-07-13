@@ -1,0 +1,96 @@
+Build me a fully responsive, modern, and conversion-optimized landing page for a product called **Cold Email Generator**.
+
+🔷 **Product Description**:
+Cold Email Generator is an AI-powered tool that helps freelancers write high-converting cold emails instantly — just by entering their service, client type, and tone.
+
+---
+
+🎯 **GOALS**:
+• Look professional, clean, and credible (like a real SaaS product)
+• Guide visitors to try the free version or upgrade to Pro
+• Focus on user trust and simplicity
+• Use color **#1034A6** (deep SaaS blue) as the **main accent**
+• Should work perfectly on **mobile, tablet, and desktop**
+
+---
+
+🎨 **Design Style**:
+• Design inspiration: Vercel, Linear, Notion, Solana
+• Use Google Font **Poppins** (or Inter as fallback)
+• Use lots of whitespace, clean dividers, and cards
+• Light background with subtle gradient or abstract accent in header
+• Smooth animations (fade-ins, button hover, scroll)
+• Rounded corners, shadows, hover effects
+• Keep visuals sharp, readable, and elegant
+
+---
+
+🧩 **Sections to Include**:
+
+1. **Hero Section**
+   - 🔹 Big bold headline:  
+     “✉️ Send Better Cold Emails. Instantly.”
+   - Subtext:  
+     “AI-crafted emails that help freelancers win clients — no writing skills needed.”
+   - CTA Buttons:  
+     “Generate Free Email” and “Upgrade for Unlimited”  
+     → Buttons should be large, hover-animated, in `#1034A6`
+
+2. **How It Works**
+   - A 3-step visual with custom SVG icons or illustrations:
+     1. Enter your service and client
+     2. Choose tone
+     3. Get email instantly
+   - Use a grid layout or horizontal steps with smooth fade-ins
+
+3. **Why Use It**
+   - Clean, bulleted benefits (with icons or checkmarks):
+     - Write confidently in seconds
+     - Win more Upwork/Fiverr projects
+     - Supports English & Urdu
+     - No account or signup needed
+
+4. **Free vs Pro Plan**
+   - Two-column pricing comparison
+   - Free Plan: 1 email/day
+   - Pro Plan: Unlimited emails – Rs. 799 / $10 (one-time)
+   - CTA:  
+     “Message us on WhatsApp to Unlock Pro” → styled as a secondary button
+
+5. **Live Demo Mockup Section**
+   - Embed a fake form or preview card showing how inputs are entered:
+     • Service: logo design  
+     • Client: startup founder  
+     • Tone: professional  
+     → [Generate Email]  
+   - Below it, show a styled email output card to simulate what users get
+
+6. **FAQ or Trust Section**
+   - A small accordion or list:
+     • Does it really work?
+     • Can I use Urdu?
+     • What’s the upgrade process?
+
+7. **Footer**
+   - Left: “Made with 💙 by [YourName] using OpenRouter AI”
+   - Right: WhatsApp / GitHub / Instagram icons (optional)
+   - Soft gray background, muted text, and hover effects
+
+---
+
+🔧 **Tech Details**:
+- Use **HTML + CSS** only (JS optional for animations)
+- Style with external CSS file (`style.css`) placed in `/static`
+- Make sure layout uses Flexbox or Grid for responsiveness
+- All buttons, links, and email cards should have hover effects
+- Include smooth scroll between sections
+
+✅ OPTIONAL (if time):
+- Add a dark mode toggle
+- Include floating WhatsApp CTA on mobile
+- Animate hero text with a simple fade-in or typewriter effect
+
+---
+
+This is for a real SaaS product — I’ll plug in the backend Flask logic separately.
+Please focus on delivering professional visual quality, responsive layout, and clean interactions.
