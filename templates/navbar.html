@@ -58,13 +58,16 @@
                 
                 <style>
                     .navbar {
-                        background: var(--card-bg) !important;
+                        background: var(--navbar-bg) !important;
                         border-bottom: 1px solid var(--border-color);
                         transition: all 0.3s ease;
+                        position: sticky;
+                        top: 0;
+                        z-index: 1000;
                     }
                     
                     .navbar-brand {
-                        color: var(--text-color) !important;
+                        color: var(--navbar-text) !important;
                         font-weight: 600;
                         transition: color 0.3s ease;
                     }
@@ -74,7 +77,7 @@
                     }
                     
                     .nav-link {
-                        color: var(--text-color) !important;
+                        color: var(--navbar-text) !important;
                         transition: all 0.3s ease;
                         border-radius: 20px;
                         padding: 0.5rem 1rem !important;
@@ -99,9 +102,9 @@
                     }
                     
                     .dark-toggle {
-                        background: var(--card-bg);
+                        background: var(--navbar-bg);
                         border: 2px solid var(--border-color);
-                        color: var(--text-color);
+                        color: var(--navbar-text);
                         border-radius: 50%;
                         width: 40px;
                         height: 40px;

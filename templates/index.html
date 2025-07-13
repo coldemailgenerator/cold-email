@@ -41,8 +41,13 @@
     .form-control:focus, .form-select:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem rgba(16, 52, 166, 0.25);
-        background: var(--card-bg);
-        color: var(--text-color);
+        background: var(--card-bg) !important;
+        color: var(--text-color) !important;
+    }
+
+    .form-control::placeholder, .form-select::placeholder {
+        color: var(--placeholder-color) !important;
+        opacity: 1;
     }
 
     .generate-btn {
