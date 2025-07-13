@@ -49,6 +49,12 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .navbar {
+    background: #000000 !important;
+    border-bottom: 1px solid #333333;
 }
 
 .nav-container {
@@ -63,6 +69,11 @@ body {
 .nav-logo h2 {
     color: var(--primary-color);
     font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+[data-theme="dark"] .nav-logo h2 {
+    color: #ffffff !important;
 }
 
 .nav-menu {
@@ -79,8 +90,16 @@ body {
     transition: color 0.3s ease;
 }
 
+[data-theme="dark"] .nav-menu a {
+    color: #ffffff !important;
+}
+
 .nav-menu a:hover {
     color: var(--primary-color);
+}
+
+[data-theme="dark"] .nav-menu a:hover {
+    color: var(--primary-color) !important;
 }
 
 .cta-btn {
@@ -96,6 +115,11 @@ body {
     box-shadow: 0 4px 12px rgba(16, 52, 166, 0.3);
 }
 
+[data-theme="dark"] .cta-btn {
+    background: var(--primary-color);
+    color: white !important;
+}
+
 .dark-toggle {
     background: none;
     border: 2px solid var(--border-color);
@@ -104,10 +128,20 @@ body {
     cursor: pointer;
     font-size: 1.2rem;
     transition: all 0.3s ease;
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .dark-toggle {
+    border-color: #ffffff;
+    color: #ffffff;
 }
 
 .dark-toggle:hover {
     transform: scale(1.1);
+}
+
+[data-theme="dark"] .dark-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Hero Section */
