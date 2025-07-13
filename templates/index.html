@@ -118,7 +118,7 @@
             <div class="form-group">
                 <label for="user_id">Your ID (Email or Phone) *</label>
                 <input type="text" id="user_id" name="user_id" required 
-                       placeholder="e.g., john@example.com or +1234567890">
+                       placeholder="e.g., john@example.com or +9234567890">
             </div>
             
             <div class="form-group">
@@ -141,6 +141,28 @@
                     <option value="bold">Bold</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label for="email_type">Email Type</label>
+                <select id="email_type" name="email_type">
+                    <option value="proposal">Proposal</option>
+                    <option value="followup">Follow-up</option>
+                    <option value="job_pitch">Job Pitch</option>
+                    <option value="general" selected>General Outreach</option>
+                </select>
+            </div>
+            <div>
+                <label>Choose Email Length (optional):</label><br>
+                <select name="length">
+                  <option value="short">Short (50–100 words)</option>
+                  <option value="medium" selected>Medium (100–200 words)</option>
+                  <option value="long">Long (200–300 words)</option>
+                </select><br><br>
+
+                <label>Custom Word Limit :</label><br>
+                <input type="number" name="word_limit" min="50" max="500"><br><br>
+
+            </div>
+
             
             <button type="submit" class="submit-btn" id="submitBtn">
                 Generate Cold Email
@@ -166,7 +188,7 @@
             result.style.display = 'block';
             result.className = 'result';
             resultContent.innerHTML = '<div class="loading">🤖 Generating your cold email...</div>';
-            
+         
             // Get form data
             const formData = new FormData(this);
             
@@ -182,7 +204,10 @@
                     result.className = 'result success';
                     resultContent.innerHTML = `
                         <h3>✅ Your Cold Email:</h3>
-                        <div class="email-output">${data.email}</div>
+                       <div class="email-output" id="emailText">${data.email}</div>
+                       <button onclick="copyEmail()" class="submit-btn" style="margin-top: 15px;"> 
+                       📋 Copy to Clipboard</button>
+
                         <div class="usage-info">
                             ${data.is_paid_user ? 
                                 '🎉 You have unlimited access!' : 
@@ -218,6 +243,16 @@
             submitBtn.disabled = false;
             submitBtn.textContent = 'Generate Cold Email';
         });
+
+        function copyEmail() {
+            const emailText = document.getElementById('emailText').innerText;
+            navigator.clipboard.writeText(emailText).then(() => {
+                alert("📋 Email copied to clipboard!");
+            }).catch(() => {
+                alert("❌ Failed to copy. Try manually.");
+            });
+        }
+
     </script>
 </body>
 </html>

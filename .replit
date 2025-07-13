@@ -1,8 +1,11 @@
+
+run = "python3 main.py"
 entrypoint = "main.py"
 modules = ["python-3.11"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["sqlite-interactive", "imagemagick_light"]
 
 [unitTest]
 language = "python3"
@@ -25,3 +28,7 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python3 main.py"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

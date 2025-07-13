@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔐 Locked Emails</title>
+</head>
+<body>
+    <h2>🔐 Locked Emails</h2>
+    <a href="/home">← Back to Home</a>
+    <hr>
+    {% if emails %}
+        <ul>
+            {% for email in emails %}
+            <li>
+                <p>{{ email[1] }}</p>
+                <small>Locked on: {{ email[2] }}</small><br><br>
+
+                <form action="/unlock/{{ email[0] }}" method="POST" style="display:inline;">
+                    <button type="submit">🔓 Unlock</button>
+                </form>
+
+                <form action="/delete_locked/{{ email[0] }}" method="POST" 
+                      style="display:inline;" 
+                      onsubmit="return confirm('Delete this locked email?');">
+                    <button type="submit">🗑️ Delete</button>
+                </form>
+                <hr>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No locked emails found.</p>
+    {% endif %}
+</body>
+</html>

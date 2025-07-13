@@ -1,111 +1,299 @@
-
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, redirect
 import requests
 import os
+import sqlite3
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this'  # Change this in production
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'fallback-secret')
 
-# Configuration
-OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY', 'your-api-key-here')
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-
-# List of paid users (user IDs)
 PAID_USERS = [
     "paid_user@example.com",
     "premium_user@example.com",
     "+1234567890"
 ]
 
-@app.route('/')
+@app.route('/home')
 def home():
+    if 'user_email' not in session:
+        return redirect('/login')
+
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, email_text, created_at 
+        FROM emails 
+        WHERE user_email = ? AND is_archived = 0 AND is_locked = 0
+        ORDER BY created_at DESC
+    """, (session['user_email'],))
+    emails = cursor.fetchall()
+    conn.close()
+
+    return render_template('home.html', emails=emails)
+
+@app.route('/generate email')
+def index():
+    if 'user_email' not in session:
+        return redirect('/login')
     return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email').strip()
+        password = request.form.get('password').strip()
+
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and user[2] == password:
+            session['user_email'] = email
+            session['is_paid'] = bool(user[3])
+            session['email_count'] = 0
+            return redirect('/generate email')
+        else:
+            return "❌ Invalid credentials. <a href='/login'>Try again</a> or <a href='/signup'>sign up</a>."
+
+    return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        email = request.form.get('email').strip()
+        password = request.form.get('password').strip()
+
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+        if cursor.fetchone():
+            conn.close()
+            return "❌ Email already registered. <a href='/login'>Login instead</a>"
+
+        cursor.execute("INSERT INTO users (email, password, is_paid) VALUES (?, ?, ?)", (email, password, 0))
+        conn.commit()
+        conn.close()
+
+        return redirect('/login')
+
+    return render_template('signup.html')
 
 @app.route('/generate', methods=['POST'])
 def generate_email():
     try:
-        # Get form data
         user_id = request.form.get('user_id', '').strip()
         service = request.form.get('service', '').strip()
         client_type = request.form.get('client_type', '').strip()
         tone = request.form.get('tone', 'professional')
-        
-        # Validate inputs
+        length = request.form.get('length', 'medium').strip()
+        word_limit = request.form.get('word_limit', '').strip()
+
         if not all([user_id, service, client_type]):
-            return jsonify({
-                'error': 'Please fill in all required fields.'
-            }), 400
-        
-        # Initialize session if needed
+            return jsonify({'error': 'Please fill in all required fields.'}), 400
+
+        word_limit = int(word_limit) if word_limit.isdigit() else {'short': 75, 'medium': 150, 'long': 250}.get(length, 150)
+
         if 'email_count' not in session:
             session['email_count'] = 0
         if 'user_id' not in session:
             session['user_id'] = user_id
-        
-        # Check if user changed
         if session.get('user_id') != user_id:
             session['user_id'] = user_id
             session['email_count'] = 0
-        
-        # Check usage limits
+
         is_paid_user = user_id in PAID_USERS
-        
-        if not is_paid_user and session['email_count'] >= 1:
-            return jsonify({
-                'error': 'Free limit reached! Contact us on WhatsApp for unlimited access.',
-                'payment_link': 'https://wa.me/1234567890?text=I%20want%20unlimited%20cold%20email%20generation'
-            }), 403
-        
-        # Generate email using OpenRouter API
-        prompt = f"Write a cold email for a freelancer offering {service} to a {client_type}. Tone: {tone}. Max 150 words."
-        
+
+        prompt = f"Write a cold email in {tone} tone with about {word_limit} words from a freelancer offering '{service}' to a {client_type}."
+
         headers = {
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Authorization": f"Bearer {os.getenv('TOGETHER_API_KEY')}",
             "Content-Type": "application/json"
         }
-        
+
         data = {
-            "model": "openai/gpt-3.5-turbo",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            "max_tokens": 300,
-            "temperature": 0.7
+            "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.7,
+            "max_tokens": int(word_limit * 1.3)
         }
-        
-        # Make API request
-        response = requests.post(OPENROUTER_URL, headers=headers, json=data, timeout=30)
-        
+
+        response = requests.post("https://api.together.xyz/v1/chat/completions", headers=headers, json=data, timeout=30)
         if response.status_code == 200:
-            result = response.json()
-            generated_email = result['choices'][0]['message']['content'].strip()
-            
-            # Increment usage count for non-paid users
+            generated_email = response.json()['choices'][0]['message']['content'].strip()
+            conn = sqlite3.connect("users.db")
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO emails (user_email, email_text) VALUES (?, ?)", (session.get('user_email'), generated_email))
+            conn.commit()
+            conn.close()
             if not is_paid_user:
                 session['email_count'] += 1
-            
-            return jsonify({
-                'success': True,
-                'email': generated_email,
-                'remaining_free': 0 if is_paid_user else max(0, 1 - session['email_count']),
-                'is_paid_user': is_paid_user
-            })
-        else:
-            return jsonify({
-                'error': f'API Error: {response.status_code} - {response.text}'
-            }), 500
-            
-    except requests.exceptions.RequestException as e:
-        return jsonify({
-            'error': f'Network error: {str(e)}'
-        }), 500
+            return jsonify({'success': True, 'email': generated_email, 'remaining_free': 0 if is_paid_user else max(0, 1 - session['email_count']), 'is_paid_user': is_paid_user})
+        return jsonify({'error': f'API Error: {response.status_code} - {response.text}'}), 500
+
     except Exception as e:
-        return jsonify({
-            'error': f'An error occurred: {str(e)}'
-        }), 500
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/delete/<int:email_id>', methods=['POST'])
+def delete_email(email_id):
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM emails WHERE id = ? AND user_email = ?", (email_id, session.get('user_email')))
+    conn.commit()
+    conn.close()
+    return redirect('/home')
+
+@app.route('/delete_all', methods=['POST'])
+def delete_all_emails():
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM emails WHERE user_email = ?", (session.get('user_email'),))
+    conn.commit()
+    conn.close()
+    return redirect('/home')
+
+@app.route('/archive/<int:email_id>', methods=['POST'])
+def archive_email(email_id):
+    if 'user_email' not in session:
+        return redirect('/login')
+
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE emails SET is_archived = 1 WHERE id = ? AND user_email = ?", (email_id, session['user_email']))
+    conn.commit()
+    conn.close()
+    return redirect('/home')
+
+@app.route('/archived')
+def view_archived():
+    if 'user_email' not in session:
+        return redirect('/login')
+
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, email_text, created_at FROM emails WHERE user_email = ? AND is_archived = 1 ORDER BY created_at DESC", (session['user_email'],))
+    emails = cursor.fetchall()
+    conn.close()
+    return render_template('archived.html', emails=emails)
+
+@app.route('/unarchive/<int:email_id>', methods=['POST'])
+def unarchive_email(email_id):
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE emails SET is_archived = 0 WHERE id = ? AND user_email = ?", (email_id, session['user_email']))
+    conn.commit()
+    conn.close()
+    return redirect('/archived')
+
+@app.route('/delete_archived/<int:email_id>', methods=['POST'])
+def delete_archived_email(email_id):
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM emails WHERE id = ? AND user_email = ? AND is_archived = 1", (email_id, session['user_email']))
+    conn.commit()
+    conn.close()
+    return redirect('/archived')
+
+@app.route('/delete_all_archived', methods=['POST'])
+def delete_all_archived():
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM emails WHERE user_email = ? AND is_archived = 1", (session['user_email'],))
+    conn.commit()
+    conn.close()
+    return redirect('/archived')
+
+@app.route('/set_lock_password', methods=['GET', 'POST'])
+def set_lock_password():
+    if 'user_email' not in session:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        password = request.form.get('password').strip()
+        if not password:
+            return "⚠️ Password cannot be empty. <a href='/set_lock_password'>Try again</a>"
+
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET lock_password = ? WHERE email = ?", (password, session['user_email']))
+        conn.commit()
+        conn.close()
+
+        return redirect('/locked')
+
+    return render_template('set_lock_password.html')
+
+@app.route('/locked', methods=['GET', 'POST'])
+def locked_emails():
+    if 'user_email' not in session:
+        return redirect('/login')
+
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT lock_password FROM users WHERE email = ?", (session['user_email'],))
+    result = cursor.fetchone()
+
+    if not result:
+        conn.close()
+        return redirect('/login')  # user doesn't exist
+
+    lock_password = result[0]
+
+    if not lock_password:
+        conn.close()
+        return redirect('/set_lock_password')  # first-time password setup
+
+    if request.method == 'POST':
+        entered_password = request.form.get('password', '').strip()
+        if entered_password == lock_password:
+            cursor.execute("SELECT id, email_text, created_at FROM emails WHERE user_email = ? AND is_locked = 1 ORDER BY created_at DESC", (session['user_email'],))
+            emails = cursor.fetchall()
+            conn.close()
+            return render_template('locked.html', emails=emails)
+        else:
+            conn.close()
+            return render_template('verify_lock_password.html', error="Incorrect password")  # ✅ Proper error handling
+
+    conn.close()
+    return render_template('verify_lock_password.html')  # Show form
+
+
+@app.route('/lock/<int:email_id>', methods=['POST'])
+def lock_email(email_id):
+    if 'user_email' not in session:
+        return redirect('/login')
+
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE emails SET is_locked = 1 WHERE id = ? AND user_email = ?", (email_id, session['user_email']))
+    conn.commit()
+    conn.close()
+    return redirect('/home')
+
+@app.route('/forgot_lock_password', methods=['GET', 'POST'])
+def forgot_lock_password():
+    if 'user_email' not in session:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        account_password = request.form.get('account_password').strip()
+
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT password FROM users WHERE email = ?", (session['user_email'],))
+        real_password = cursor.fetchone()[0]
+
+        if account_password == real_password:
+            conn.close()
+            return redirect('/set_lock_password')
+        else:
+            conn.close()
+            
+    return "❌ Incorrect lock password. <a href='/locked'>Try again</a> or <a href='/forgot_lock_password'>Reset it</a>"
+
+
+    
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

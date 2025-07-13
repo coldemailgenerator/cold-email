@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📥 Archived Emails</title>
+</head>
+<body>
+    <h2>📥 Archived Emails</h2>
+    <a href="/home">← Back to Home</a>
+    <hr>
+    <form action="/delete_all_archived" method="POST" onsubmit="return confirm('⚠️ Are you sure you want to delete ALL archived emails?');">
+        <button type="submit">❌ Delete All Archived</button>
+    </form>
+
+    {% if emails %}
+        <ul>
+            {% for email in emails %}
+            <li>
+              <p>{{ email[1] }}</p>
+              <small>Archived on: {{ email[2] }}</small><br><br>
+
+              <form action="/unarchive/{{ email[0] }}" method="POST" style="display:inline;">
+                  <button type="submit">↩️ Unarchive</button>
+              </form>
+
+                <form action="/delete_archived/{{ email[0] }}" method="POST" 
+                      style="display:inline;" 
+                      onsubmit="return confirm('Delete this email?');">
+                    <button type="submit">🗑️ Delete</button>
+                </form>
+
+              <hr>
+            </li>
+
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No archived emails found.</p>
+    {% endif %}
+</body>
+</html>

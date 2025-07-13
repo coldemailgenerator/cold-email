@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Generated Emails</title>
+</head>
+<body>
+    <h2>📧 Your Emails</h2>
+
+    {% if emails %}
+        <form method="POST" action="/delete_all">
+            <button type="submit">🗑️ Delete All Emails</button>
+        </form>
+        <br>
+        <ul>
+            {% for email in emails %}
+                <li>
+                    <p>{{ email[1] }}</p>
+
+                    <!-- 🗑️ Delete Button -->
+                    <form action="/delete/{{ email[0] }}" method="POST" style="display:inline;">
+                        <button type="submit">🗑️ Delete</button>
+                    </form>
+
+                    <!-- 📥 Archive Button -->
+                    <form action="/archive/{{ email[0] }}" method="POST" style="display:inline;">
+                        <button type="submit">📥 Archive</button>
+                    </form>
+
+                    
+                    <form action="/lock/{{ email[0] }}" method="POST" style="display:inline;">
+                        <button type="submit">🔒 Lock</button>
+                    </form>
+<hr>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No emails found.</p>
+    {% endif %}
+</body>
+</html>
