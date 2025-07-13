@@ -1,179 +1,150 @@
-{% extends "base.html" %}
+{% extends "layout.html" %}
 
-{% block title %}Dashboard - EmailGen{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-{% endblock %}
+{% block title %}Dashboard - Cold Email Generator{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-    <!-- Welcome Hero -->
-    <div class="welcome-hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Welcome back, {{ session['user_email'].split('@')[0] }}! 👋</h1>
-                    <p>Ready to create emails that convert? Let's generate your next winning outreach.</p>
-                    <div class="hero-actions">
-                        <a href="/generate email" class="btn-hero primary">
-                            <i class="fas fa-magic"></i>
-                            Generate New Email
-                        </a>
-                        <a href="/archived" class="btn-hero secondary">
-                            <i class="fas fa-history"></i>
-                            View History
-                        </a>
-                    </div>
-                </div>
-                <div class="hero-visual">
-                    <div class="floating-card">
-                        <div class="card-icon">
-                            <i class="fas fa-paper-plane"></i>
+<div class="dashboard-header">
+    <div class="container">
+        <div class="profile-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <h1>Welcome back, {{ user.name }}!</h1>
+        <p>Ready to generate some amazing cold emails?</p>
+        <div style="margin-top: 2rem;">
+            <a href="/generate" class="btn btn-primary" style="margin-right: 1rem;">
+                <i class="fas fa-magic"></i>
+                Generate New Email
+            </a>
+            <a href="/archived" class="btn btn-secondary">
+                <i class="fas fa-archive"></i>
+                View Archive
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="dashboard-content">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <span class="stat-number">{{ total_emails or 0 }}</span>
+            <span class="stat-label">Total Emails</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-archive"></i>
+            </div>
+            <span class="stat-number">{{ archived_emails or 0 }}</span>
+            <span class="stat-label">Archived</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <span class="stat-number">{{ locked_emails or 0 }}</span>
+            <span class="stat-label">Locked</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <span class="stat-number">{{ user.plan or 'Free' }}</span>
+            <span class="stat-label">Current Plan</span>
+        </div>
+    </div>
+
+    {% if recent_emails %}
+    <div class="card" style="margin-bottom: 3rem;">
+        <div class="card-header">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-clock"></i>
+                Recent Emails
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="emails-grid">
+                {% for email in recent_emails[:3] %}
+                <div class="email-card {% if email.is_locked %}locked{% endif %}">
+                    {% if email.is_locked %}
+                        <i class="fas fa-lock lock-icon"></i>
+                    {% endif %}
+
+                    <div class="email-header">
+                        <div class="email-subject">{{ email.subject }}</div>
+                        <div class="email-meta">
+                            <span>{{ email.tone.title() }}</span>
+                            <span>{{ email.created_at.strftime('%b %d, %Y') }}</span>
                         </div>
-                        <h4>AI-Powered</h4>
-                        <p>Generate professional emails instantly</p>
+                    </div>
+
+                    <div class="email-body">
+                        {% if email.is_locked %}
+                            <p style="text-align: center; color: var(--text-muted); font-style: italic;">
+                                🔒 This email is locked. 
+                                <a href="/locked" style="color: var(--primary-color);">Click to unlock</a>
+                            </p>
+                        {% else %}
+                            {{ email.content[:150] }}{% if email.content|length > 150 %}...{% endif %}
+                        {% endif %}
+                    </div>
+
+                    <div class="email-actions">
+                        {% if not email.is_locked %}
+                            <button class="btn btn-secondary btn-sm">
+                                <i class="fas fa-copy"></i>
+                                Copy
+                            </button>
+                        {% endif %}
+                        <a href="/archived" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i>
+                            View
+                        </a>
                     </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
-    </div>
-
-    <!-- Dashboard Stats -->
-    <div class="stats-section">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3>0</h3>
-                        <p>Emails Generated</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3>0</h3>
-                        <p>Locked Emails</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-archive"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3>0</h3>
-                        <p>Archived</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3>0%</h3>
-                        <p>Success Rate</p>
-                    </div>
-                </div>
-            </div>
+        <div class="card-footer" style="text-align: center;">
+            <a href="/archived" class="btn btn-primary">
+                <i class="fas fa-archive"></i>
+                View All Emails
+            </a>
         </div>
     </div>
+    {% endif %}
 
-    <!-- Quick Actions -->
-    <div class="actions-section">
-        <div class="container">
-            <h2>Quick Actions</h2>
-            <div class="actions-grid">
-                <div class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Quick Generate</h3>
-                    <p>Generate an email with your most used settings</p>
-                    <a href="/generate email" class="action-btn">
-                        <i class="fas fa-arrow-right"></i>
-                        Start Now
-                    </a>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-template"></i>
-                    </div>
-                    <h3>Templates</h3>
-                    <p>Browse and use pre-made email templates</p>
-                    <a href="/templates" class="action-btn">
-                        <i class="fas fa-arrow-right"></i>
-                        Browse
-                    </a>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Set Lock Password</h3>
-                    <p>Secure your important emails with a password</p>
-                    <a href="/set_lock_password" class="action-btn">
-                        <i class="fas fa-arrow-right"></i>
-                        Setup
-                    </a>
-                </div>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-lightbulb"></i>
+                Quick Actions
+            </h3>
         </div>
-    </div>
-
-    <!-- Recent Activity -->
-    <div class="activity-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Recent Activity</h2>
-                <a href="/archived" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-            </div>
-
-            <div class="activity-content">
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-inbox"></i>
-                    </div>
-                    <h3>No emails generated yet</h3>
-                    <p>Your email history will appear here once you start generating emails.</p>
-                    <a href="/generate email" class="empty-cta">
-                        <i class="fas fa-plus"></i>
-                        Create Your First Email
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tips Section -->
-    <div class="tips-section">
-        <div class="container">
-            <div class="tips-card">
-                <div class="tips-header">
-                    <i class="fas fa-lightbulb"></i>
-                    <h3>Pro Tips</h3>
-                </div>
-                <div class="tips-content">
-                    <div class="tip">
-                        <strong>Be Specific:</strong> The more details you provide about your service and target client, the better your email will be.
-                    </div>
-                    <div class="tip">
-                        <strong>Choose the Right Tone:</strong> Match your tone to your audience - professional for corporations, friendly for startups.
-                    </div>
-                    <div class="tip">
-                        <strong>Lock Important Emails:</strong> Use our lock feature to protect your best-performing email templates.
-                    </div>
-                </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <a href="/generate" class="btn btn-primary" style="padding: 1.5rem; text-align: center;">
+                    <i class="fas fa-magic" style="display: block; font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    Generate Email
+                </a>
+                <a href="/set_lock_password" class="btn btn-secondary" style="padding: 1.5rem; text-align: center;">
+                    <i class="fas fa-shield-alt" style="display: block; font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    Set Lock Password
+                </a>
+                <a href="/profile" class="btn btn-warning" style="padding: 1.5rem; text-align: center;">
+                    <i class="fas fa-user-cog" style="display: block; font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    Manage Profile
+                </a>
+                <button onclick="openWhatsApp()" class="btn btn-success" style="padding: 1.5rem; text-align: center;">
+                    <i class="fab fa-whatsapp" style="display: block; font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    Upgrade to Pro
+                </button>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script src="{{ url_for('static', filename='js/home.js') }}"></script>
 {% endblock %}

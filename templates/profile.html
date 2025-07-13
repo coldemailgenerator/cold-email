@@ -1,634 +1,199 @@
+{% extends "layout.html" %}
 
-{% extends 'base.html' %}
-
-{% block title %}Profile - EmailGen{% endblock %}
-
-{% block extra_css %}
-<style>
-    .profile-header {
-        background: linear-gradient(135deg, var(--primary-color), #0f2a7a);
-        color: white;
-        padding: 3rem 0;
-        border-radius: 0 0 30px 30px;
-        margin-bottom: 3rem;
-    }
-
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        transition: all 0.3s ease;
-    }
-
-    .profile-avatar:hover {
-        transform: scale(1.05);
-        border-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .stat-card {
-        background: var(--card-bg);
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: center;
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-hover);
-    }
-
-    .stat-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-    }
-
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-        color: var(--text-color);
-        opacity: 0.8;
-        font-weight: 500;
-    }
-
-    .quick-actions {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-
-    .action-card {
-        background: var(--card-bg);
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: center;
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-        cursor: pointer;
-        text-decoration: none;
-        color: var(--text-color);
-    }
-
-    .action-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-hover);
-        color: var(--text-color);
-        text-decoration: none;
-    }
-
-    .action-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-    }
-
-    .settings-section {
-        margin-top: 3rem;
-    }
-
-    .setting-item {
-        background: var(--card-bg);
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        border: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.3s ease;
-    }
-
-    .setting-item:hover {
-        transform: translateX(5px);
-        box-shadow: var(--shadow);
-    }
-
-    .toggle-switch {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 34px;
-    }
-
-    .toggle-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: 0.4s;
-        border-radius: 34px;
-    }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: 0.4s;
-        border-radius: 50%;
-    }
-
-    input:checked + .slider {
-        background-color: var(--primary-color);
-    }
-
-    input:checked + .slider:before {
-        transform: translateX(26px);
-    }
-
-    @media (max-width: 768px) {
-        .profile-header {
-            padding: 2rem 0;
-        }
-        
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            font-size: 2rem;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-        }
-        
-        .quick-actions {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-{% endblock %}
+{% block title %}Profile - Cold Email Generator{% endblock %}
 
 {% block content %}
 <div class="profile-header">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-3 text-center">
-                <div class="profile-avatar mx-auto" id="profileAvatar">
-                    <img id="profileImage" src="" alt="Profile" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                    <i class="fas fa-user" id="defaultAvatar"></i>
-                </div>
-            </div>
-            <div class="col-md-9">
-                <h1 class="display-4 fw-bold mb-2">Welcome back!</h1>
-                <p class="lead mb-1">{{ session.get('user_email', 'user@example.com') }}</p>
-                <p class="mb-0 opacity-75">
-                    {% if session.get('is_paid') %}
-                        <i class="fas fa-crown text-warning me-1"></i>Pro Member
-                    {% else %}
-                        <i class="fas fa-user text-light me-1"></i>Free Account
-                    {% endif %}
-                </p>
-            </div>
+        <div class="profile-avatar">
+            <i class="fas fa-user"></i>
         </div>
+        <h1>{{ user.name }}</h1>
+        <p>{{ user.email }}</p>
+        <span class="badge" style="background: var(--accent-color); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">
+            {{ user.plan or 'Free' }} Plan
+        </span>
     </div>
 </div>
 
 <div class="container">
-    <!-- Statistics Cards -->
-    <div class="row mb-5">
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-envelope"></i>
+    <div class="profile-sections">
+        <!-- Account Information -->
+        <div class="profile-section">
+            <div class="section-header">
+                <i class="fas fa-user-circle"></i>
+                <h3>Account Information</h3>
+            </div>
+
+            <form method="POST" action="/update_profile">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i>
+                        Full Name
+                    </label>
+                    <input type="text" class="form-control" name="name" value="{{ user.name }}" required>
                 </div>
-                <div class="stat-number" id="totalEmails">{{ total_emails }}</div>
-                <div class="stat-label">Total Emails</div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Changes
+                </button>
+            </form>
+        </div>
+
+        <!-- Statistics -->
+        <div class="profile-section">
+            <div class="section-header">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Your Statistics</h3>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div style="text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 10px;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">
+                        {{ total_emails or 0 }}
+                    </div>
+                    <div style="color: var(--text-light);">Total Emails</div>
+                </div>
+
+                <div style="text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 10px;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--accent-color);">
+                        {{ archived_emails or 0 }}
+                    </div>
+                    <div style="color: var(--text-light);">Archived</div>
+                </div>
+
+                <div style="text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 10px;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--warning-color);">
+                        {{ locked_emails or 0 }}
+                    </div>
+                    <div style="color: var(--text-light);">Locked</div>
+                </div>
+
+                <div style="text-align: center; padding: 1rem; background: var(--bg-color); border-radius: 10px;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--info-color);">
+                        {{ user.created_at.strftime('%b %Y') if user.created_at else 'N/A' }}
+                    </div>
+                    <div style="color: var(--text-light);">Member Since</div>
+                </div>
             </div>
         </div>
-        
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon">
+
+        <!-- Security Settings -->
+        <div class="profile-section">
+            <div class="section-header">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Security Settings</h3>
+            </div>
+
+            <div style="display: grid; gap: 1rem;">
+                <a href="/change_password" class="btn btn-secondary" style="justify-content: flex-start;">
+                    <i class="fas fa-key"></i>
+                    Change Password
+                </a>
+
+                <a href="/set_lock_password" class="btn btn-secondary" style="justify-content: flex-start;">
                     <i class="fas fa-lock"></i>
+                    Set Lock Password
+                </a>
+
+                <a href="/verify_lock_password" class="btn btn-secondary" style="justify-content: flex-start;">
+                    <i class="fas fa-unlock"></i>
+                    Verify Lock Password
+                </a>
+
+                <a href="/forgot_lock_password" class="btn btn-warning" style="justify-content: flex-start;">
+                    <i class="fas fa-question-circle"></i>
+                    Reset Lock Password
+                </a>
+            </div>
+        </div>
+
+        <!-- Subscription -->
+        <div class="profile-section">
+            <div class="section-header">
+                <i class="fas fa-crown"></i>
+                <h3>Subscription</h3>
+            </div>
+
+            <div style="background: var(--bg-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Current Plan: {{ user.plan or 'Free' }}</h4>
+                {% if user.plan == 'Free' %}
+                    <p style="color: var(--text-light);">1 email per day • Basic features</p>
+                {% else %}
+                    <p style="color: var(--text-light);">Unlimited emails • All features</p>
+                {% endif %}
+            </div>
+
+            {% if user.plan == 'Free' %}
+                <div style="background: linear-gradient(135deg, var(--primary-color), #0f2a7a); color: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">Upgrade to Pro</h4>
+                    <ul style="list-style: none; margin-bottom: 1.5rem;">
+                        <li style="padding: 0.25rem 0;"><i class="fas fa-check" style="color: var(--accent-color); margin-right: 0.5rem;"></i> Unlimited emails</li>
+                        <li style="padding: 0.25rem 0;"><i class="fas fa-check" style="color: var(--accent-color); margin-right: 0.5rem;"></i> Priority generation</li>
+                        <li style="padding: 0.25rem 0;"><i class="fas fa-check" style="color: var(--accent-color); margin-right: 0.5rem;"></i> Advanced customization</li>
+                        <li style="padding: 0.25rem 0;"><i class="fas fa-check" style="color: var(--accent-color); margin-right: 0.5rem;"></i> WhatsApp support</li>
+                    </ul>
+                    <button onclick="openWhatsApp('Hi! I want to upgrade to Pro plan from my profile. My email is {{ user.email }}')" 
+                            class="btn" style="background: var(--accent-color); color: white; width: 100%;">
+                        <i class="fab fa-whatsapp"></i>
+                        Upgrade to Pro - $10
+                    </button>
                 </div>
-                <div class="stat-number" id="lockedEmails">{{ locked_emails }}</div>
-                <div class="stat-label">Locked Emails</div>
-            </div>
+            {% endif %}
         </div>
-        
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-archive"></i>
-                </div>
-                <div class="stat-number" id="archivedEmails">{{ archived_emails }}</div>
-                <div class="stat-label">Archived Emails</div>
-            </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-envelope-open"></i>
-                </div>
-                <div class="stat-number" id="activeEmails">{{ active_emails }}</div>
-                <div class="stat-label">Active Emails</div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Quick Actions -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <h3 class="mb-4">
-                <i class="fas fa-bolt text-primary me-2"></i>Quick Actions
-            </h3>
-            <div class="quick-actions">
-                <a href="/generate email" class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-magic"></i>
-                    </div>
-                    <h5 class="fw-bold mb-2">Generate Email</h5>
-                    <p class="text-muted mb-0">Create a new cold email</p>
-                </a>
-                
-                <a href="/home" class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <h5 class="fw-bold mb-2">View All Emails</h5>
-                    <p class="text-muted mb-0">Browse your email library</p>
-                </a>
-                
-                <a href="/locked" class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <h5 class="fw-bold mb-2">Locked Emails</h5>
-                    <p class="text-muted mb-0">Access private emails</p>
-                </a>
-                
-                <a href="/archived" class="action-card">
-                    <div class="action-icon">
-                        <i class="fas fa-archive"></i>
-                    </div>
-                    <h5 class="fw-bold mb-2">Archived Emails</h5>
-                    <p class="text-muted mb-0">View archived content</p>
-                </a>
+        <!-- Danger Zone -->
+        <div class="profile-section">
+            <div class="section-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Danger Zone</h3>
             </div>
-        </div>
-    </div>
 
-    <!-- Settings Section -->
-    <div class="settings-section">
-        <h3 class="mb-4">
-            <i class="fas fa-cog text-primary me-2"></i>Settings
-        </h3>
-        
-        <div class="setting-item">
-            <div>
-                <h5 class="mb-1">Dark Mode</h5>
-                <p class="text-muted mb-0">Toggle between light and dark themes</p>
-            </div>
-            <label class="toggle-switch">
-                <input type="checkbox" id="darkModeSwitch">
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="setting-item">
-            <div>
-                <h5 class="mb-1">Email Notifications</h5>
-                <p class="text-muted mb-0">Receive updates about your account</p>
-            </div>
-            <label class="toggle-switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="setting-item">
-            <div>
-                <h5 class="mb-1">Auto-save Generated Emails</h5>
-                <p class="text-muted mb-0">Automatically save all generated emails</p>
-            </div>
-            <label class="toggle-switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-    </div>
+            <div style="display: grid; gap: 1rem;">
+                <form method="POST" action="/logout" style="margin: 0;">
+                    <button type="submit" class="btn btn-warning" style="width: 100%; justify-content: flex-start;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </form>
 
-    <!-- Profile Settings Section -->
-    <div class="settings-section">
-        <h3 class="mb-4">
-            <i class="fas fa-user-cog text-primary me-2"></i>Profile Settings
-        </h3>
-        
-        <div class="setting-item">
-            <div>
-                <h5 class="mb-1">Profile Picture</h5>
-                <p class="text-muted mb-0">Upload a custom profile picture</p>
-            </div>
-            <div class="d-flex gap-2">
-                <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
-                <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('profilePhotoInput').click()">
-                    <i class="fas fa-camera me-2"></i>Upload
-                </button>
-                <button class="btn btn-outline-danger btn-sm" onclick="removeProfilePhoto()">
-                    <i class="fas fa-trash me-2"></i>Remove
-                </button>
-            </div>
-        </div>
-        
-        <div class="setting-item">
-            <div>
-                <h5 class="mb-1">Display Name</h5>
-                <p class="text-muted mb-0">Customize how your name appears</p>
-            </div>
-            <button class="btn btn-outline-primary btn-sm" onclick="changeDisplayName()">
-                <i class="fas fa-edit me-2"></i>Edit
-            </button>
-        </div>
-        
-        <div class="setting-item">
-            <div>
-                <h5 class="mb-1">Email Preferences</h5>
-                <p class="text-muted mb-0">Manage your email generation settings</p>
-            </div>
-            <button class="btn btn-outline-primary btn-sm" onclick="openEmailPreferences()">
-                <i class="fas fa-cog me-2"></i>Configure
-            </button>
-        </div>
-    </div>
-
-    <!-- Security Section -->
-    <div class="settings-section">
-        <h3 class="mb-4">
-            <i class="fas fa-shield-alt text-primary me-2"></i>Security
-        </h3>
-        
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <button class="btn btn-outline-primary w-100" onclick="changeAccountPassword()">
-                    <i class="fas fa-key me-2"></i>Change Password
-                </button>
-            </div>
-            <div class="col-md-4 mb-3">
-                <a href="/set_lock_password" class="btn btn-outline-primary w-100">
-                    <i class="fas fa-lock me-2"></i>Set Lock Password
-                </a>
-            </div>
-            <div class="col-md-4 mb-3">
-                <button class="btn btn-outline-primary w-100" onclick="setupTwoFactor()">
-                    <i class="fas fa-mobile-alt me-2"></i>Two-Factor Auth
+                <button onclick="deleteAccount()" class="btn btn-danger" style="width: 100%; justify-content: flex-start;">
+                    <i class="fas fa-trash-alt"></i>
+                    Delete Account
                 </button>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-    // Animate numbers on page load
-    function animateNumber(element, start, end, duration) {
-        const startTime = performance.now();
-        
-        function updateNumber(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            const current = Math.floor(progress * (end - start) + start);
-            element.textContent = current;
-            
-            if (progress < 1) {
-                requestAnimationFrame(updateNumber);
-            }
-        }
-        
-        requestAnimationFrame(updateNumber);
-    }
-
-    // Animate stats on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        animateNumber(document.getElementById('totalEmails'), 0, {{ total_emails }}, 2000);
-        animateNumber(document.getElementById('lockedEmails'), 0, {{ locked_emails }}, 1500);
-        animateNumber(document.getElementById('archivedEmails'), 0, {{ archived_emails }}, 1800);
-        animateNumber(document.getElementById('activeEmails'), 0, {{ active_emails }}, 1200);
-        
-        // Sync dark mode switch with navbar toggle
-        const darkModeSwitch = document.getElementById('darkModeSwitch');
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            darkModeSwitch.checked = true;
-        }
-        
-        darkModeSwitch.addEventListener('change', function() {
-            document.getElementById('darkModeToggle').click();
-        });
-        
-        // Load saved profile photo
-        loadProfilePhoto();
-        
-        // Profile photo upload handler
-        document.getElementById('profilePhotoInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imageData = e.target.result;
-                    localStorage.setItem('profilePhoto', imageData);
-                    displayProfilePhoto(imageData);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    });
-
-    function loadProfilePhoto() {
-        const savedPhoto = localStorage.getItem('profilePhoto');
-        if (savedPhoto) {
-            displayProfilePhoto(savedPhoto);
+function deleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your emails and data. Are you absolutely sure?')) {
+            // Submit delete request
+            fetch('/delete_account', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert('Failed to delete account. Please try again.');
+                }
+            });
         }
     }
-
-    function displayProfilePhoto(imageData) {
-        const profileImage = document.getElementById('profileImage');
-        const defaultAvatar = document.getElementById('defaultAvatar');
-        
-        profileImage.src = imageData;
-        profileImage.style.display = 'block';
-        defaultAvatar.style.display = 'none';
-    }
-
-    function removeProfilePhoto() {
-        localStorage.removeItem('profilePhoto');
-        const profileImage = document.getElementById('profileImage');
-        const defaultAvatar = document.getElementById('defaultAvatar');
-        
-        profileImage.style.display = 'none';
-        defaultAvatar.style.display = 'block';
-    }
-
-    function changeDisplayName() {
-        const currentName = '{{ session.get("user_email", "").split("@")[0] }}';
-        const newName = prompt('Enter your display name:', currentName);
-        if (newName && newName.trim()) {
-            localStorage.setItem('displayName', newName.trim());
-            alert('Display name updated! (Note: This is stored locally)');
-        }
-    }
-
-    function changeAccountPassword() {
-        const modal = document.createElement('div');
-        modal.className = 'modal fade';
-        modal.innerHTML = `
-            <div class="modal-dialog">
-                <div class="modal-content" style="background: var(--card-bg); color: var(--text-color);">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Change Account Password</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="changePasswordForm">
-                            <div class="mb-3">
-                                <label class="form-label">Current Password</label>
-                                <input type="password" class="form-control" id="currentPassword" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">New Password</label>
-                                <input type="password" class="form-control" id="newPassword" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Confirm New Password</label>
-                                <input type="password" class="form-control" id="confirmNewPassword" required>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="submitPasswordChange()">Change Password</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        new bootstrap.Modal(modal).show();
-    }
-
-    function submitPasswordChange() {
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmNewPassword').value;
-
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            alert('Please fill in all fields');
-            return;
-        }
-
-        if (newPassword !== confirmPassword) {
-            alert('New passwords do not match');
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            alert('New password must be at least 6 characters long');
-            return;
-        }
-
-        // Here you would typically send this to your backend
-        alert('Password change functionality would be implemented here with backend integration');
-    }
-
-    function openEmailPreferences() {
-        const modal = document.createElement('div');
-        modal.className = 'modal fade';
-        modal.innerHTML = `
-            <div class="modal-dialog">
-                <div class="modal-content" style="background: var(--card-bg); color: var(--text-color);">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Email Preferences</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Default Email Tone</label>
-                            <select class="form-select" id="defaultTone">
-                                <option value="professional">Professional</option>
-                                <option value="friendly">Friendly</option>
-                                <option value="bold">Bold</option>
-                                <option value="casual">Casual</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Default Email Length</label>
-                            <select class="form-select" id="defaultLength">
-                                <option value="short">Short (50-100 words)</option>
-                                <option value="medium">Medium (100-200 words)</option>
-                                <option value="long">Long (200-300 words)</option>
-                            </select>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="autoSave" checked>
-                            <label class="form-check-label" for="autoSave">
-                                Auto-save generated emails
-                            </label>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="saveEmailPreferences()">Save Preferences</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        new bootstrap.Modal(modal).show();
-        
-        // Load saved preferences
-        const savedTone = localStorage.getItem('defaultTone');
-        const savedLength = localStorage.getItem('defaultLength');
-        const savedAutoSave = localStorage.getItem('autoSave');
-        
-        if (savedTone) document.getElementById('defaultTone').value = savedTone;
-        if (savedLength) document.getElementById('defaultLength').value = savedLength;
-        if (savedAutoSave) document.getElementById('autoSave').checked = savedAutoSave === 'true';
-    }
-
-    function saveEmailPreferences() {
-        const tone = document.getElementById('defaultTone').value;
-        const length = document.getElementById('defaultLength').value;
-        const autoSave = document.getElementById('autoSave').checked;
-        
-        localStorage.setItem('defaultTone', tone);
-        localStorage.setItem('defaultLength', length);
-        localStorage.setItem('autoSave', autoSave);
-        
-        alert('Email preferences saved!');
-        bootstrap.Modal.getInstance(document.querySelector('.modal')).hide();
-    }
-
-    function setupTwoFactor() {
-        alert('Two-Factor Authentication setup would be implemented here with proper security protocols');
-    }
+}
 </script>
 {% endblock %}
