@@ -30,11 +30,21 @@ def home():
 
     return render_template('home.html', emails=emails)
 
+@app.route('/')
+def landing():
+    return render_template('landing.html')
+
 @app.route('/generate email')
 def index():
     if 'user_email' not in session:
         return redirect('/login')
     return render_template('index.html')
+
+@app.route('/profile')
+def profile():
+    if 'user_email' not in session:
+        return redirect('/login')
+    return render_template('profile.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

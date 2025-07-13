@@ -1,34 +1,115 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>🔐 Locked Emails</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Locked Emails - EmailGen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/locked.css') }}">
 </head>
 <body>
-    <h2>🔐 Locked Emails</h2>
-    <a href="/home">← Back to Home</a>
-    <hr>
-    {% if emails %}
-        <ul>
-            {% for email in emails %}
-            <li>
-                <p>{{ email[1] }}</p>
-                <small>Locked on: {{ email[2] }}</small><br><br>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>📧 EmailGen</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/generate email">Generate</a></li>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/archived">Archived</a></li>
+                <li><a href="/locked" class="active">Locked</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><button id="darkModeToggle" class="dark-toggle">🌙</button></li>
+            </ul>
+        </div>
+    </nav>
 
-                <form action="/unlock/{{ email[0] }}" method="POST" style="display:inline;">
-                    <button type="submit">🔓 Unlock</button>
-                </form>
+    <div class="container">
+        <div class="header-section">
+            <h1>🔐 Locked Emails</h1>
+            <p>Your private and secure email templates</p>
+            <a href="/home" class="back-btn">← Back to Home</a>
+        </div>
 
-                <form action="/delete_locked/{{ email[0] }}" method="POST" 
-                      style="display:inline;" 
-                      onsubmit="return confirm('Delete this locked email?');">
-                    <button type="submit">🗑️ Delete</button>
-                </form>
-                <hr>
-            </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No locked emails found.</p>
-    {% endif %}
+        <div class="locked-section">
+            {% if emails %}
+                <div class="emails-grid">
+                    {% for email in emails %}
+                    <div class="email-card locked-card">
+                        <div class="email-header">
+                            <div class="email-meta">
+                                <span class="email-date">Locked on: {{ email[2] }}</span>
+                                <span class="email-id">#{{ email[0] }}</span>
+                            </div>
+                            <div class="lock-indicator">🔒</div>
+                        </div>
+                        <div class="email-content">
+                            {{ email[1] }}
+                        </div>
+                        <div class="email-footer">
+                            <div class="email-actions">
+                                <form action="/unlock/{{ email[0] }}" method="POST" class="inline-form">
+                                    <button type="submit" class="btn-unlock">🔓 Unlock</button>
+                                </form>
+                                <form action="/delete_locked/{{ email[0] }}" method="POST" 
+                                      class="inline-form"
+                                      onsubmit="return confirm('Delete this locked email permanently?');">
+                                    <button type="submit" class="btn-delete">🗑️ Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🔒</div>
+                    <h2>No locked emails</h2>
+                    <p>You haven't locked any emails yet. Lock emails from your home page to keep them secure.</p>
+                    <a href="/home" class="btn-primary">Go to Home</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>📧 EmailGen</h3>
+                    <p>Professional cold email generation made simple.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/generate email">Generate</a></li>
+                        <li><a href="/home">Home</a></li>
+                        <li><a href="/profile">Profile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">💼</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 EmailGen. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/locked.js') }}"></script>
 </body>
 </html>
